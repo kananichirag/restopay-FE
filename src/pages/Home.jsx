@@ -5,6 +5,7 @@ function Home() {
   return (
     <div>
       <Header />
+      <div>{/* Write Your Home Page Code Here */}</div>
     </div>
   );
 }
