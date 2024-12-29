@@ -1,8 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import Header from "./components/Header";
 import Home from "./pages/Home";
+import Dashboard from "./components/auth/Dashboard";
+import RestaurantPage from "./components/RestarurantPage";
+import ManagerDashboard from "./components/ManagerDashboard";
+import ManagerPrivateRoute from "./auth/ManagerPrivateRoute";
 
 function App() {
   return (
@@ -10,6 +13,12 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/restaurantpage" element={<RestaurantPage />} />
+      <Route
+        path="/manager"
+        element={<ManagerPrivateRoute element={<ManagerDashboard />} />}
+      />
     </Routes>
   );
 }

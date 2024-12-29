@@ -1,0 +1,71 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
+export const fetchMenuItems = createAsyncThunk(
+    'menu/fetchMenuItems',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const state = getState();
+            const restaurantId = state.auth.user.restaurant_id;
+            if (!restaurantId) {
+                throw new Error('Restaurant ID is missing');
+            }
+
+            const response = await axios.get(
+                `${import.meta.env.VITE_REACT_BASE_URL}/menu/getallitems/${restaurantId}`
+            );
+
+            if (response.data.success === false) {
+                toast.error(response.data.message || 'Failed to fetch menu items');
+                return rejectWithValue(response.data.message);
+            }
+
+            if (!response.data.data || response.data.data.length === 0) {
+                return rejectWithValue('No menu items found');
+            }
+
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.message || error.response?.data || 'Something went wrong');
+        }
+    }
+);
+
+
+const initialState = {
+    menu: null,
+    status: 'idle',
+    error: null,
+};
+
+const menuSlice = createSlice({
+    name: 'menu',
+    initialState,
+    reducers: {
+        addItem: (state, action) => {
+            state.menu.items.push(action.payload);
+        },
+        deleteItem: (state, action) => {
+            state.menu.items = state.menu.items.filter(item => item._id !== action.payload._id);
+        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchMenuItems.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(fetchMenuItems.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.menu = action.payload.data[0];
+            })
+            .addCase(fetchMenuItems.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload || 'Failed to fetch menu items';
+            });
+    },
+});
+
+export const { addItem, deleteItem } = menuSlice.actions;
+export default menuSlice.reducer;
