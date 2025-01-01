@@ -42,6 +42,9 @@ function Login() {
       if (role === "manager") {
         localStorage.setItem("Authtoken", res.data.data.Manager_token);
         dispatch(login(res.data.data.manager));
+      } else if (role === "cashier") {
+        localStorage.setItem("Authtoken", res.data.data.Cashier_token);
+        dispatch(login(res.data.data.cashier));
       } else {
         localStorage.setItem("Authtoken", res.data.data.token);
         dispatch(login(res.data.data.user));

@@ -7,16 +7,17 @@ import { MdDeleteOutline } from "react-icons/md";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
+import { MdOutlineRestaurantMenu } from "react-icons/md";
 import {
   addItem,
   deleteItem,
   fetchMenuItems,
+  updateItem,
 } from "../../store/slices/MenuSlice";
 
 function AddMenuItem() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setisUpdateModealOpen] = useState(false);
-  console.log(isUpdateModalOpen);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -27,11 +28,12 @@ function AddMenuItem() {
     isAvailable: true,
     image: null,
   });
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItemid, setEditingItemId] = useState(null);
   const disptach = useDispatch();
   const status = useSelector((state) => state.menu.status);
   const restaurantId = useSelector((state) => state.auth?.user?.restaurant_id);
   const MenuItems = useSelector((state) => state.menu?.menu?.items);
+  const [uploadedImage, setUploadedImage] = useState(null);
 
   useEffect(() => {
     disptach(fetchMenuItems());
@@ -50,6 +52,10 @@ function AddMenuItem() {
       ...formData,
       image: e.target.files[0],
     });
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedImage(URL.createObjectURL(file));
+    }
   };
   const resetForm = () => {
     setFormData({
@@ -137,9 +143,40 @@ function AddMenuItem() {
     }
   };
 
+  const handleUpdateItem = async () => {
+    try {
+      const token = localStorage.getItem("Authtoken");
+      if (!restaurantId) {
+        toast.error("Restaurant ID is missing");
+        return;
+      }
+      const res = await axios.put(
+        `${import.meta.env.VITE_REACT_BASE_URL}/menu/update/${restaurantId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.data.success) {
+        disptach(updateItem(res.data.data));
+        setisUpdateModealOpen(false);
+        toast.success(res.data.message);
+      } else {
+        setisUpdateModealOpen(false);
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      setisUpdateModealOpen(false);
+      console.error("Error updating item:", error);
+      toast.error("An error occurred while updating the item.");
+    }
+  };
+
   const handleEditClick = (item) => {
     setFormData(item);
-    setEditingItem(item);
+    setEditingItemId(item._id);
     setisUpdateModealOpen(true);
   };
 
@@ -263,7 +300,7 @@ function AddMenuItem() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl w-[60%] max-w-4xl max-h-[90vh] flex flex-col">
             <h2 className="text-2xl font-extrabold text-gray-700 p-6 border-b">
-              {editingItem ? "Edit Menu Item" : "Add Menu Item"}
+              Add Menu Item
             </h2>
             <div className="overflow-y-auto p-6 flex-grow scrollbar-custom">
               <form className="space-y-6">
@@ -351,37 +388,58 @@ function AddMenuItem() {
                 </div>
                 {/* Image Upload */}
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500 hover:border-blue-400 hover:text-blue-400 transition">
-                  <input
-                    type="file"
-                    name="image"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                    id="imageUpload"
-                  />
-                  <label
-                    htmlFor="imageUpload"
-                    className="cursor-pointer flex flex-col items-center"
-                  >
-                    <svg
-                      className="w-12 h-12 mb-2 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 16v2a2 2 0 002 2h14a2 2 0 002-2v-2m-4-4l-4-4m0 0l-4 4m4-4v12"
+                  {uploadedImage ? (
+                    <div className="relative">
+                      <img
+                        src={uploadedImage}
+                        alt="Uploaded Preview"
+                        className="w-40 h-40 object-cover rounded-lg"
                       />
-                    </svg>
-                    <span className="text-center text-sm">
-                      Drag & Drop or{" "}
-                      <span className="text-blue-500 underline">Browse</span>
-                    </span>
-                  </label>
+                      <button
+                        type="button"
+                        onClick={() => setUploadedImage(null)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="imageUpload"
+                      />
+                      <label
+                        htmlFor="imageUpload"
+                        className="cursor-pointer flex flex-col items-center"
+                      >
+                        <svg
+                          className="w-12 h-12 mb-2 text-gray-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 16v2a2 2 0 002 2h14a2 2 0 002-2v-2m-4-4l-4-4m0 0l-4 4m4-4v12"
+                          />
+                        </svg>
+                        <span className="text-center text-sm">
+                          Drag & Drop or{" "}
+                          <span className="text-blue-500 underline">
+                            Browse
+                          </span>
+                        </span>
+                      </label>
+                    </>
+                  )}
                 </div>
               </form>
             </div>
@@ -410,7 +468,7 @@ function AddMenuItem() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl w-[60%] max-w-4xl max-h-[90vh] flex flex-col">
             <h2 className="text-2xl font-extrabold text-gray-700 p-6 border-b">
-              {editingItem ? "Edit Menu Item" : "Add Menu Item"}
+              Edit Menu Item
             </h2>
             <div className="overflow-y-auto p-6 flex-grow scrollbar-custom">
               <form className="space-y-6">
@@ -498,6 +556,13 @@ function AddMenuItem() {
                 </div>
                 {/* Image Upload */}
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500 hover:border-blue-400 hover:text-blue-400 transition">
+                  {formData && formData?.imageUrl && (
+                    <img
+                      src={formData.imageUrl}
+                      alt="Uploaded Preview"
+                      className="w-40 h-40 object-cover rounded-lg"
+                    />
+                  )}
                   <input
                     type="file"
                     name="image"
@@ -543,6 +608,7 @@ function AddMenuItem() {
               </button>
               <button
                 type="submit"
+                onClick={handleUpdateItem}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition"
               >
                 Update Item

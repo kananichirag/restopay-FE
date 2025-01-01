@@ -6,6 +6,7 @@ import Dashboard from "./components/auth/Dashboard";
 import RestaurantPage from "./components/RestarurantPage";
 import ManagerDashboard from "./components/ManagerDashboard";
 import ManagerPrivateRoute from "./auth/ManagerPrivateRoute";
+import CashiersDashboard from "./components/CashiersDashboard";
 
 function App() {
   return (
@@ -18,6 +19,10 @@ function App() {
       <Route
         path="/manager"
         element={<ManagerPrivateRoute element={<ManagerDashboard />} />}
+      />
+      <Route
+        path="/cashier-panel"
+        element={<ManagerPrivateRoute element={<CashiersDashboard />} />}
       />
     </Routes>
   );

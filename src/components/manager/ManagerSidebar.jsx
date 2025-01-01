@@ -1,9 +1,21 @@
 import React from "react";
+import { MdOutlineRestaurantMenu } from "react-icons/md";
+import { FiUsers } from "react-icons/fi";
+import { MdOutlineInventory2 } from "react-icons/md";
 
 function Sidebar({ onSelect, selectedPage }) {
   const menuItems = [
-    { name: "Menu", key: "addMenuItem" },
-    { name: "Add Staff", key: "addStaff" },
+    {
+      name: "Menu",
+      key: "addMenuItem",
+      icon: <MdOutlineRestaurantMenu size={25} />,
+    },
+    { name: "Add Staff", key: "addStaff", icon: <FiUsers size={25} /> },
+    {
+      name: "Inventory",
+      key: "inventory",
+      icon: <MdOutlineInventory2 size={25} />,
+    },
   ];
 
   return (
@@ -22,7 +34,10 @@ function Sidebar({ onSelect, selectedPage }) {
             }`}
             onClick={() => onSelect(item.key)}
           >
-            {item.name}
+            <div className="flex items-center gap-5">
+              {item.icon}
+              {item.name}
+            </div>
           </li>
         ))}
       </ul>

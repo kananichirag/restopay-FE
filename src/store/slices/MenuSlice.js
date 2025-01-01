@@ -49,6 +49,19 @@ const menuSlice = createSlice({
         deleteItem: (state, action) => {
             state.menu.items = state.menu.items.filter(item => item._id !== action.payload._id);
         },
+        updateItem: (state, action) => {
+            const { _id, ...updatedFields } = action.payload;
+
+            const itemIndex = state.menu.items.findIndex((item) => item._id === _id);
+
+            if (itemIndex !== -1) {
+                state.menu.items[itemIndex] = {
+                    ...state.menu.items[itemIndex],
+                    ...updatedFields,
+                };
+            }
+        },
+
     },
     extraReducers: (builder) => {
         builder
@@ -67,5 +80,5 @@ const menuSlice = createSlice({
     },
 });
 
-export const { addItem, deleteItem } = menuSlice.actions;
+export const { addItem, deleteItem, updateItem } = menuSlice.actions;
 export default menuSlice.reducer;

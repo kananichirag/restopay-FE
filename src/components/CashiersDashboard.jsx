@@ -1,20 +1,13 @@
 import React, { useState } from "react";
-import ManagerSidebar from "./manager/ManagerSidebar";
-import AddMenuItem from "./manager/AddMenuitem";
-import AddStaff from "./manager/AddStaff";
-import AddInventory from "./manager/AddInventory";
+import AddOrder from "./cashier/AddOrder";
 
 function ManagerDashboard() {
   const [selectedPage, setSelectedPage] = useState("addMenuItem");
 
   const renderContent = () => {
     switch (selectedPage) {
-      case "addMenuItem":
-        return <AddMenuItem />;
-      case "addStaff":
-        return <AddStaff />;
-      case "inventory":
-        return <AddInventory />;
+      case "addorder":
+        return <AddOrder />;
       default:
         return <div>Select an option from the sidebar</div>;
     }
