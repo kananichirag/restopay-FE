@@ -16,6 +16,11 @@ function Sidebar({ onSelect, selectedPage }) {
       key: "inventory",
       icon: <MdOutlineInventory2 size={25} />,
     },
+    {
+      name: "Genrate Code",
+      key: "qrcode",
+      icon: <MdOutlineInventory2 size={25} />,
+    },
   ];
 
   return (

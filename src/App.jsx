@@ -7,6 +7,7 @@ import RestaurantPage from "./components/RestarurantPage";
 import ManagerDashboard from "./components/ManagerDashboard";
 import ManagerPrivateRoute from "./auth/ManagerPrivateRoute";
 import CashiersDashboard from "./components/CashiersDashboard";
+import RestaurantMenuPage from "./pages/RestaurantMenuPage";
 
 function App() {
   return (
@@ -16,6 +17,10 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/restaurantpage" element={<RestaurantPage />} />
+      <Route
+        path="/menu/:restaurantId/:tableNumber"
+        element={<RestaurantMenuPage />}
+      />
       <Route
         path="/manager"
         element={<ManagerPrivateRoute element={<ManagerDashboard />} />}

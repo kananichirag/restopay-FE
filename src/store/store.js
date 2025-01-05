@@ -3,8 +3,9 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // Default: localStorage for web
 import { combineReducers } from 'redux';
 import authReducer from './slices/AuthSlice';
-import MenuReducer from "./slices/MenuSlice" // Create an authSlice for login data
-
+import MenuReducer from "./slices/MenuSlice"
+import CustomerReducer from "./slices/CustomerSlice";
+import QrCodeReducer from "./slices/QrSlice"
 // Persist Configuration
 const persistConfig = {
     key: 'root',
@@ -14,7 +15,9 @@ const persistConfig = {
 // Combine Reducers
 const rootReducer = combineReducers({
     auth: authReducer,
-    menu: MenuReducer
+    menu: MenuReducer,
+    customer: CustomerReducer,
+    qrCode: QrCodeReducer
 });
 
 // Persist Reducer
