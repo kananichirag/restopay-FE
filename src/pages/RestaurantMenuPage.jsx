@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { CiSearch } from "react-icons/ci";
 import { FiShoppingCart } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,8 +13,20 @@ import CartSidebar from "../components/User/CartSidebar";
 function RestaurantMenuPage() {
   const { restaurantId, tableNumber } = useParams();
   const dispatch = useDispatch();
+  const location = useLocation();
   const MenuItems = useSelector((state) => state.customer?.menu?.items);
   const CartCount = useSelector((state) => state.customer?.cart?.length);
+
+  useEffect(() => {
+    if (location.state?.openCart) {
+      setCartSidebarOpen(true);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    localStorage.setItem("restaurantId", restaurantId);
+    localStorage.setItem("tableNumber", tableNumber);
+  }, [restaurantId]);
 
   useEffect(() => {
     if (restaurantId) {
