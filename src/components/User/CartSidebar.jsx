@@ -8,9 +8,11 @@ import {
   removeFromCart,
 } from "../../store/slices/CustomerSlice";
 import { AiOutlineDelete } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 function CartSidebar({ isOpen, toggleSidebar }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cartItems = useSelector((state) => state.customer?.cart);
 
   const handleRemoveItem = (id) => {
@@ -26,7 +28,14 @@ function CartSidebar({ isOpen, toggleSidebar }) {
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+  };
+
+  const handleCheckout = () => {
+    navigate("/checkout");
   };
 
   return (
@@ -48,7 +57,7 @@ function CartSidebar({ isOpen, toggleSidebar }) {
             <p className="text-center">Your cart is empty.</p>
           ) : (
             <ul>
-              {cartItems.map((item) => (
+              {cartItems?.map((item) => (
                 <li
                   key={item._id}
                   className="flex justify-between items-center mb-4"
@@ -111,7 +120,10 @@ function CartSidebar({ isOpen, toggleSidebar }) {
           </div>
 
           <div className="p-4 border-t">
-            <button className="bg-red-500 text-white py-2 px-4 w-full rounded-lg">
+            <button
+              onClick={handleCheckout}
+              className="bg-red-500 text-white py-2 px-4 w-full rounded-lg"
+            >
               Checkout
             </button>
           </div>

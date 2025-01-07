@@ -80,7 +80,11 @@ const customerSlice = createSlice({
                 // Remove the item completely from the cart, no matter what the quantity is
                 state.cart.splice(existingItemIndex, 1);
             }
-        }
+        },
+        emptyCart: (state) => {
+            state.cart = [];
+        },
+
     },
     extraReducers: (builder) => {
         builder
@@ -99,5 +103,5 @@ const customerSlice = createSlice({
     },
 });
 
-export const { updateMenuItem, updateOrderItem, addToCart, removeFromCart, incrementQuantity, decrementQuantity } = customerSlice.actions;
+export const { updateMenuItem, updateOrderItem, addToCart, removeFromCart, incrementQuantity, decrementQuantity, emptyCart } = customerSlice.actions;
 export default customerSlice.reducer;

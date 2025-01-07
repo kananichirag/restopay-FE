@@ -1,7 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleOnClick = () => {
+    navigate("/login");
+  };
 
   return (
     <header>
@@ -41,8 +47,11 @@ function Header() {
 
         {/* Book Demo Button */}
         <div className="hidden md:block">
-          <button className="border border-red-500 text-gray-700 px-4 py-1 md:px-6 md:py-2 md:text-sm lg:text-base rounded-md hover:bg-red-500 hover:text-white transition duration-200">
-            Book Demo
+          <button
+            onClick={handleOnClick}
+            className="border border-red-500 text-gray-700 px-4 py-1 md:px-6 md:py-2 md:text-sm lg:text-base rounded-md hover:bg-red-500 hover:text-white transition duration-200"
+          >
+            Login
           </button>
         </div>
 
