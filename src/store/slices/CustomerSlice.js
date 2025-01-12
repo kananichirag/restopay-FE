@@ -33,7 +33,7 @@ export const fetchCustomerMenuItems = createAsyncThunk(
 
 const initialState = {
     menu: null,
-    orders: null,
+    orders: [],
     cart: [],
     status: 'idle',
     error: null,
@@ -84,6 +84,14 @@ const customerSlice = createSlice({
         emptyCart: (state) => {
             state.cart = [];
         },
+        addOrder: (state, action) => {
+            const { orderData } = action.payload;
+            if (orderData) {
+                state.orders.push(orderData);
+            } else {
+                toast.error('Invalid order data or Razorpay Order ID');
+            }
+        },
 
     },
     extraReducers: (builder) => {
@@ -103,5 +111,5 @@ const customerSlice = createSlice({
     },
 });
 
-export const { updateMenuItem, updateOrderItem, addToCart, removeFromCart, incrementQuantity, decrementQuantity, emptyCart } = customerSlice.actions;
+export const { updateMenuItem, updateOrderItem, addToCart, removeFromCart, incrementQuantity, decrementQuantity, emptyCart, addOrder } = customerSlice.actions;
 export default customerSlice.reducer;

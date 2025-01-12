@@ -5,7 +5,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { FaGooglePay, FaMoneyBillWave } from "react-icons/fa";
 import { MdArrowBack } from "react-icons/md";
-import { emptyCart } from "../../store/slices/CustomerSlice";
+import { addOrder, emptyCart } from "../../store/slices/CustomerSlice";
+import LoadingCricle from "../LoadingCricle";
 
 function CheckoutPage() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ function CheckoutPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [userName, setUserName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const calculateTotal = () => {
     return cartItems.reduce(
@@ -23,67 +25,85 @@ function CheckoutPage() {
   };
 
   const handlePayment = async () => {
-    if (!userName || !mobileNumber) {
-      toast.error("Please fill in your name and mobile number.");
-      return;
-    }
-    // if (!selectedPaymentMethod) {
-    //   toast.error("Please select a payment method.");
-    //   return;
-    // }
-    const restaurantId = localStorage.getItem("restaurantId");
-    const tableNumber = localStorage.getItem("tableNumber");
-    const response = await axios.post(
-      `${import.meta.env.VITE_REACT_BASE_URL}/menu/createorder/${restaurantId}`,
-      {
-        username: userName,
-        mobileno: mobileNumber,
-        tableNumber: tableNumber,
-        payment_method: selectedPaymentMethod,
-        cart: cartItems,
+    try {
+      setLoading(true);
+      if (!userName || !mobileNumber) {
+        toast.error("Please fill in your name and mobile number.");
+        return;
       }
-    );
-    if (response.data.success && selectedPaymentMethod === "gpay") {
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: response.data.order.total_amount * 100, // Amount in paise
-        currency: "INR",
-        name: "RestoPay",
-        description: `Order #${response.data.order.orderNumber}`,
-        order_id: response.data.order.razorpayOrderId, // Razorpay Order ID from server
-        handler: async function (response) {
-          // Payment was successful, now verify the payment on the server
-          const verificationResp = await axios.post(
-            `${import.meta.env.VITE_REACT_BASE_URL}/menu/verifypayment`,
-            {
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-            }
-          );
-
-          if (verificationResp.data.success) {
-            toast.success(verificationResp.data.message);
-          } else {
-            toast.error(verificationResp.data.message);
-          }
-        },
-        prefill: {
-          name: userName,
+      // if (!selectedPaymentMethod) {
+      //   toast.error("Please select a payment method.");
+      //   return;
+      // }
+      const restaurantId = localStorage.getItem("restaurantId");
+      const tableNumber = localStorage.getItem("tableNumber");
+      const response = await axios.post(
+        `${
+          import.meta.env.VITE_REACT_BASE_URL
+        }/menu/createorder/${restaurantId}`,
+        {
+          username: userName,
           mobileno: mobileNumber,
-        },
-        theme: {
-          color: "#3399cc",
-        },
-      };
-      const rzp1 = new window.Razorpay(options);
-      rzp1.open();
-      dispatch(emptyCart());
-      navigate(`/menu/${restaurantId}/${tableNumber}`);
-    } else {
-      dispatch(emptyCart())
-      toast.success(response.data.message);
-      navigate(`/menu/${restaurantId}/${tableNumber}`);
+          tableNumber: tableNumber,
+          payment_method: selectedPaymentMethod,
+          cart: cartItems,
+        }
+      );
+      if (response.data.success && selectedPaymentMethod === "gpay") {
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+          amount: response.data.order.total_amount * 100,
+          currency: "INR",
+          name: "RestoPay",
+          description: `Order #${response.data.order.orderNumber}`,
+          order_id: response.data.order.razorpayOrderId,
+          handler: async function (response) {
+            const verificationResp = await axios.post(
+              `${import.meta.env.VITE_REACT_BASE_URL}/menu/verifypayment`,
+              {
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              }
+            );
+
+            if (verificationResp.data.success) {
+              toast.success(verificationResp.data.message);
+            } else {
+              toast.error(verificationResp.data.message);
+            }
+          },
+          prefill: {
+            name: userName,
+            mobileno: mobileNumber,
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open();
+        dispatch(emptyCart());
+        dispatch(
+          addOrder({
+            orderData: {
+              ...response?.data?.order,
+              payment_status: "Completed",
+            },
+          })
+        );
+        navigate(`/menu/${restaurantId}/${tableNumber}`);
+        setLoading(false);
+      } else {
+        dispatch(emptyCart());
+        dispatch(addOrder({ orderData: response?.data.order }));
+        toast.success(response.data.message);
+        navigate(`/menu/${restaurantId}/${tableNumber}`);
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
     }
   };
 
@@ -101,6 +121,7 @@ function CheckoutPage() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto bg-gray-100 rounded-lg shadow-lg">
+      {loading && <LoadingCricle />}
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={handleBack}
@@ -189,22 +210,6 @@ function CheckoutPage() {
         <div>
           <h2 className="text-xl font-semibold mb-4">Choose Payment Method</h2>
           <div className="grid grid-cols-2 gap-4">
-            {/* <button
-              onClick={() => setSelectedPaymentMethod("razorpay")}
-              className={`flex flex-col items-center p-4 rounded-lg shadow-md transition-all hover:shadow-lg ${
-                selectedPaymentMethod === "razorpay"
-                  ? "bg-green-100 border border-green-500"
-                  : "bg-white"
-              }`}
-            >
-              <img
-                src="https://razorpay.com/assets/razorpay-glyph.svg"
-                alt="Razorpay"
-                className="w-8 h-8 mb-2"
-              />
-              Razorpay
-            </button> */}
-
             <button
               onClick={() => setSelectedPaymentMethod("gpay")}
               className={`flex flex-col items-center p-4 rounded-lg shadow-md transition-all hover:shadow-lg ${
