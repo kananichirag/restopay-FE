@@ -4,16 +4,18 @@ import { toast } from 'react-toastify';
 
 export const fetchRestaurants = createAsyncThunk(
     'restaurant/fetchRestaurants',
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
             const token = localStorage.getItem("Authtoken");
 
             if (!token) {
                 throw new Error('Authorization token is missing');
             }
+            const state = getState();
+            const adminID = state.auth?.user?._id;
 
             const response = await axios.get(
-                `${import.meta.env.VITE_REACT_BASE_URL}/restaurant/getallrestaurant`,
+                `${import.meta.env.VITE_REACT_BASE_URL}/restaurant/getallrestaurant/${adminID}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
