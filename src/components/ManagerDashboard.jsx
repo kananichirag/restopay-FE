@@ -4,6 +4,7 @@ import AddMenuItem from "./manager/AddMenuitem";
 import AddStaff from "./manager/AddStaff";
 import AddInventory from "./manager/AddInventory";
 import CreateQrCode from "./manager/CreateQrCode";
+import MamagerOrderPage from "./manager/MamagerOrderPage";
 
 function ManagerDashboard() {
   const [selectedPage, setSelectedPage] = useState("addMenuItem");
@@ -18,6 +19,8 @@ function ManagerDashboard() {
         return <AddInventory />;
       case "qrcode":
         return <CreateQrCode />;
+      case "orderpage":
+        return <MamagerOrderPage />;
       default:
         return <div>Select an option from the sidebar</div>;
     }

@@ -2,6 +2,7 @@ import React from "react";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { FiUsers } from "react-icons/fi";
 import { MdOutlineInventory2 } from "react-icons/md";
+import { IoQrCodeOutline } from "react-icons/io5";
 
 function Sidebar({ onSelect, selectedPage }) {
   const menuItems = [
@@ -19,6 +20,11 @@ function Sidebar({ onSelect, selectedPage }) {
     {
       name: "Genrate Code",
       key: "qrcode",
+      icon: <IoQrCodeOutline size={25} />,
+    },
+    {
+      name: "Orders",
+      key: "orderpage",
       icon: <MdOutlineInventory2 size={25} />,
     },
   ];
