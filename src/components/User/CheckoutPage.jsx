@@ -29,6 +29,7 @@ function CheckoutPage() {
       setLoading(true);
       if (!userName || !mobileNumber) {
         toast.error("Please fill in your name and mobile number.");
+        setLoading(false);
         return;
       }
       // if (!selectedPaymentMethod) {

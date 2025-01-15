@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import Header from "../components/Header";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
   const [formdata, setFormdata] = useState({
@@ -9,23 +11,58 @@ function Home() {
     password: "",
     mobileno: "",
   });
-
+  const [formErrors, setFormErrors] = useState({});
+  const navigate = useNavigate();
   const formSectionRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormdata({ ...formdata, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { name, email, password, mobileno } = formdata;
+
+    // Clear previous errors
+    setFormErrors({});
+
     if (!name || !email || !password || !mobileno) {
+      setFormErrors({
+        name: !name ? "Name is required" : "",
+        email: !email ? "Email is required" : "",
+        password: !password ? "Password is required" : "",
+        mobileno: !mobileno ? "Mobile number is required" : "",
+      });
       toast.error("Please fill all the fields", {
         position: "top-right",
       });
-    } else {
-      toast.success("SignUp Successfully");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        `${import.meta.env.VITE_REACT_BASE_URL}/auth/signup`,
+        formdata
+      );
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        setLoading(false);
+        navigate("/login");
+      } else {
+        if (response.data.errors) {
+          setFormErrors(response.data.errors);
+          setLoading(false);
+        }
+        toast.error(response.data.message);
+        setLoading(false);
+      }
+    } catch (err) {
+      toast.error("An unexpected error occurred");
+      setLoading(false);
     }
   };
 
@@ -94,6 +131,11 @@ function Home() {
                 placeholder="Enter your name"
                 onChange={handleFormChange}
               />
+              {formErrors.name && (
+                <span className="error  text-sm text-red-500 ">
+                  {formErrors.name}
+                </span>
+              )}
             </div>
 
             <div className="mb-6">
@@ -111,6 +153,11 @@ function Home() {
                 placeholder="Enter your email"
                 onChange={handleFormChange}
               />
+              {formErrors.email && (
+                <span className="error  text-sm text-red-500 ">
+                  {formErrors.email}
+                </span>
+              )}
             </div>
 
             <div className="mb-6">
@@ -128,6 +175,11 @@ function Home() {
                 placeholder="Enter your password"
                 onChange={handleFormChange}
               />
+              {formErrors.password && (
+                <span className="erro text-sm text-red-500 ">
+                  {formErrors.password}
+                </span>
+              )}
             </div>
 
             <div className="mb-6">
@@ -145,6 +197,11 @@ function Home() {
                 placeholder="Enter your mobile number"
                 onChange={handleFormChange}
               />
+              {formErrors.mobileno && (
+                <span className="error  text-sm text-red-500 ">
+                  {formErrors.mobileno}
+                </span>
+              )}
             </div>
 
             <div className="flex justify-center">
@@ -152,7 +209,7 @@ function Home() {
                 className="bg-red-500 text-white px-8 py-3 rounded-md hover:bg-red-600 transition duration-200"
                 onClick={handleSubmit}
               >
-                Submit
+                {loading ? "Loading..." : "Submit"}
               </button>
             </div>
           </form>

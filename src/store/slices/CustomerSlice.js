@@ -31,6 +31,35 @@ export const fetchCustomerMenuItems = createAsyncThunk(
     }
 );
 
+export const fetchAllOrders = createAsyncThunk(
+    'menu/fetchAllOrders',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const state = getState();
+            const restaurantId = state.auth.user.restaurant_id;
+            if (!restaurantId) {
+                throw new Error('Restaurant ID is missing');
+            }
+
+            const response = await axios.get(
+                `${import.meta.env.VITE_REACT_BASE_URL}/menu/getallorders/${restaurantId}`
+            );
+            if (response.data.success === false) {
+                toast.error(response.data.message || 'Failed to fetch order items');
+                return rejectWithValue(response.data.message);
+            }
+
+            if (!response.data.data || response.data.data.length === 0) {
+                return rejectWithValue('No menu items found');
+            }
+
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.message || error.response?.data || 'Something went wrong');
+        }
+    }
+);
+
 const initialState = {
     menu: null,
     orders: [],
@@ -107,6 +136,18 @@ const customerSlice = createSlice({
             .addCase(fetchCustomerMenuItems.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload || 'Failed to fetch menu items';
+            })
+            .addCase(fetchAllOrders.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(fetchAllOrders.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.orders = action.payload;
+            })
+            .addCase(fetchAllOrders.rejected, (state) => {
+                state.status = 'failed';
+                state.error = action.payload;
             })
     },
 });
