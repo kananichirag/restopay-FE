@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import StaffModal from "../model/StaffModal ";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllStaffMembers } from "../../store/slices/StaffSlice";
+import LoadingCricle from "../LoadingCricle";
 
 function AddStaff() {
+  const dispatch = useDispatch();
   const [staff, setStaff] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
+  const status = useSelector((state) => state.staff?.status);
+  const StaffMembers = useSelector((state) => state.staff?.staff_members);
+
+  useEffect(() => {
+    dispatch(fetchAllStaffMembers());
+  }, []);
 
   const handleAddStaff = () => {
     setSelectedStaff(null); // Clear selected staff for adding new
@@ -22,6 +32,7 @@ function AddStaff() {
 
   return (
     <div className="p-6">
+      {status === "loading" && <LoadingCricle />}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Manage Staff</h1>
         <button
@@ -45,7 +56,7 @@ function AddStaff() {
             </tr>
           </thead>
           <tbody>
-            {staff.length === 0 ? (
+            {StaffMembers?.length === 0 ? (
               <tr>
                 <td colSpan="6">
                   <div className="flex flex-col items-center justify-center h-96">
@@ -61,7 +72,7 @@ function AddStaff() {
                 </td>
               </tr>
             ) : (
-              staff.map((member) => (
+              StaffMembers?.map((member) => (
                 <tr key={member.id} className="border-b">
                   <td className="px-4 py-2 flex items-center justify-center">
                     <img
@@ -72,7 +83,7 @@ function AddStaff() {
                   </td>
                   <td className="px-4 py-2 text-center">{member.name}</td>
                   <td className="px-4 py-2 text-center">{member.role}</td>
-                  <td className="px-4 py-2 text-center">{member.contact}</td>
+                  <td className="px-4 py-2 text-center">{member.contect }</td>
                   <td className="px-4 py-2 text-center">{member.shift}</td>
                   <td className="px-4 py-2 text-center">
                     <button
