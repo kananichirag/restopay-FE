@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../store/slices/AuthSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Joi from "joi";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -11,17 +12,52 @@ function Login() {
     password: "",
     role: "cashier",
   });
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  const schema = Joi.object({
+    email: Joi.string()
+      .email({ tlds: { allow: false } })
+      .required()
+      .messages({
+        "string.empty": "Email is required",
+        "string.email": "Enter a valid email address",
+      }),
+    password: Joi.string().min(6).required().messages({
+      "string.empty": "Password is required",
+      "string.min": "Password must be at least 6 characters",
+    }),
+    role: Joi.string().valid("admin", "manager", "cashier").required(),
+  });
+
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: "" });
+  };
+
+  const validateForm = () => {
+    const { error } = schema.validate(formData, { abortEarly: false });
+    if (!error) return null;
+
+    const validationErrors = {};
+    error.details.forEach((detail) => {
+      validationErrors[detail.path[0]] = detail.message;
+    });
+    return validationErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const validationErrors = validateForm();
+    if (validationErrors) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
       setLoading(true);
       const { role, ...loginData } = formData;
@@ -87,11 +123,17 @@ function Login() {
               id="email"
               name="email"
               autoComplete="email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+              className={`w-full px-4 py-2 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-red-500`}
               placeholder="Enter your email"
               value={formData.email}
               onChange={handleFormChange}
+              disabled={loading}
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email}</p>
+            )}
           </div>
 
           {/* Password Field */}
@@ -107,11 +149,17 @@ function Login() {
               id="password"
               name="password"
               autoComplete="current-password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+              className={`w-full px-4 py-2 border ${
+                errors.password ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-red-500`}
               placeholder="Enter your password"
               value={formData.password}
               onChange={handleFormChange}
+              disabled={loading}
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password}</p>
+            )}
           </div>
 
           {/* Role Selector */}
@@ -128,6 +176,7 @@ function Login() {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
               value={formData.role}
               onChange={handleFormChange}
+              disabled={loading}
             >
               <option value="admin">Admin</option>
               <option value="manager">Manager</option>

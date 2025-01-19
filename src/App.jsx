@@ -17,10 +17,13 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<AdminDashboard />} />
+      <Route
+        path="/dashboard"
+        element={<ManagerPrivateRoute element={<AdminDashboard />} />}
+      />
       <Route path="/restaurantpage" element={<RestaurantPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="//manager-signup" element={<ManagerSignUpPage />} />
+      <Route path="/manager-signup" element={<ManagerSignUpPage />} />
       <Route
         path="/menu/:restaurantId/:tableNumber"
         element={<RestaurantMenuPage />}

@@ -3,7 +3,7 @@ import { FiX } from "react-icons/fi";
 import { useSelector } from "react-redux";
 
 function OrderSidebar({ isOpen, toggleSidebar }) {
-  const orderItems = useSelector((state) => state.customer?.orders);
+  const orderItems = useSelector((state) => state.customer?.placeded_orders);
 
   return (
     <div
@@ -75,7 +75,8 @@ function OrderSidebar({ isOpen, toggleSidebar }) {
                     Total: ₹{parseFloat(order.total_amount).toFixed(2)}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Status: {order.order_status} | Payment: {order.payment_status}
+                    Status: {order.order_status} | Payment:{" "}
+                    {order.payment_status}
                   </p>
                 </div>
               </li>

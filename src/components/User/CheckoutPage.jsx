@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { FaGooglePay, FaMoneyBillWave } from "react-icons/fa";
 import { MdArrowBack } from "react-icons/md";
-import { addOrder, emptyCart } from "../../store/slices/CustomerSlice";
+import {
+  addToCustomerOrder,
+  emptyCart,
+} from "../../store/slices/CustomerSlice";
 import LoadingCricle from "../LoadingCricle";
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_SOCKET_URL);
 
 function CheckoutPage() {
   const navigate = useNavigate();
@@ -86,18 +92,25 @@ function CheckoutPage() {
         rzp1.open();
         dispatch(emptyCart());
         dispatch(
-          addOrder({
+          addToCustomerOrder({
             orderData: {
               ...response?.data?.order,
               payment_status: "Completed",
             },
           })
         );
+        socket.emit("newOrder", {
+          orderData: {
+            ...response.data.order,
+            payment_status: "Completed",
+          },
+        });
         navigate(`/menu/${restaurantId}/${tableNumber}`);
         setLoading(false);
       } else {
         dispatch(emptyCart());
-        dispatch(addOrder({ orderData: response?.data.order }));
+        dispatch(addToCustomerOrder({ orderData: response?.data.order }));
+        socket.emit("newOrder", { orderData: response?.data.order });
         toast.success(response.data.message);
         navigate(`/menu/${restaurantId}/${tableNumber}`);
         setLoading(false);
