@@ -20,7 +20,7 @@ function RestaurantMenuPage() {
   const location = useLocation();
   const MenuItems = useSelector((state) => state.customer?.menu?.items);
   const CartCount = useSelector((state) => state.customer?.cart?.length);
-  const OrderCount = useSelector((state) => state.customer?.orders?.length);
+  const OrderCount = useSelector((state) => state.customer?.placeded_orders?.length);
 
   useEffect(() => {
     if (location.state?.openCart) {

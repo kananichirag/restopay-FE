@@ -31,38 +31,9 @@ export const fetchCustomerMenuItems = createAsyncThunk(
     }
 );
 
-export const fetchAllOrders = createAsyncThunk(
-    'menu/fetchAllOrders',
-    async (_, { getState, rejectWithValue }) => {
-        try {
-            const state = getState();
-            const restaurantId = state.auth.user.restaurant_id;
-            if (!restaurantId) {
-                throw new Error('Restaurant ID is missing');
-            }
-
-            const response = await axios.get(
-                `${import.meta.env.VITE_REACT_BASE_URL}/menu/getallorders/${restaurantId}`
-            );
-            if (response.data.success === false) {
-                toast.error(response.data.message || 'Failed to fetch order items');
-                return rejectWithValue(response.data.message);
-            }
-
-            if (!response.data.data || response.data.data.length === 0) {
-                return rejectWithValue('No menu items found');
-            }
-
-            return response.data.data;
-        } catch (error) {
-            return rejectWithValue(error.message || error.response?.data || 'Something went wrong');
-        }
-    }
-);
-
 const initialState = {
     menu: null,
-    orders: [],
+    placeded_orders: [],
     cart: [],
     status: 'idle',
     error: null,
@@ -113,10 +84,10 @@ const customerSlice = createSlice({
         emptyCart: (state) => {
             state.cart = [];
         },
-        addOrder: (state, action) => {
+        addToCustomerOrder: (state, action) => {
             const { orderData } = action.payload;
             if (orderData) {
-                state.orders.push(orderData);
+                state.placeded_orders.push(orderData);
             } else {
                 toast.error('Invalid order data or Razorpay Order ID');
             }
@@ -137,20 +108,8 @@ const customerSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.payload || 'Failed to fetch menu items';
             })
-            .addCase(fetchAllOrders.pending, (state) => {
-                state.status = 'loading';
-                state.error = null;
-            })
-            .addCase(fetchAllOrders.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.orders = action.payload;
-            })
-            .addCase(fetchAllOrders.rejected, (state) => {
-                state.status = 'failed';
-                state.error = action.payload;
-            })
     },
 });
 
-export const { updateMenuItem, updateOrderItem, addToCart, removeFromCart, incrementQuantity, decrementQuantity, emptyCart, addOrder } = customerSlice.actions;
+export const { updateMenuItem, updateOrderItem, addToCart, removeFromCart, incrementQuantity, decrementQuantity, emptyCart, addToCustomerOrder } = customerSlice.actions;
 export default customerSlice.reducer;

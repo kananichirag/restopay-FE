@@ -2,17 +2,34 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import Joi from "joi";
 
 const ManagerSignUpPage = () => {
   const [searchParams] = useSearchParams();
   const [managerDetails, setManagerDetails] = useState(null);
   const [formData, setFormData] = useState({ mobileno: "", password: "" });
-  const [fieldErrors, setFieldErrors] = useState({});
+  const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const token = searchParams.get("token");
+
+  // Joi schema for validation
+  const schema = Joi.object({
+    mobileno: Joi.string()
+      .pattern(/^\d{10}$/)
+      .messages({
+        "string.pattern.base": "Mobile number must be exactly 10 digits.",
+        "string.empty": "Mobile number is required.",
+      }),
+    password: Joi.string()
+      .min(6)
+      .messages({
+        "string.min": "Password must be at least 6 characters long.",
+        "string.empty": "Password is required.",
+      }),
+  });
 
   useEffect(() => {
     const fetchManagerDetails = async () => {
@@ -30,16 +47,37 @@ const ManagerSignUpPage = () => {
     fetchManagerDetails();
   }, [token]);
 
+  const validateField = (name, value) => {
+    const fieldSchema = schema.extract(name); // Extract schema for the specific field
+    const { error } = fieldSchema.validate(value);
+    return error ? error.message : null;
+  };
+
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setFieldErrors({ ...fieldErrors, [name]: "" }); // Clear field error when user types
+
+    // Validate field
+    const error = validateField(name, value);
+    setValidationErrors((prev) => ({ ...prev, [name]: error }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setFieldErrors({});
+
+    // Validate entire form data
+    const { error } = schema.validate(formData, { abortEarly: false });
+    if (error) {
+      const errors = error.details.reduce((acc, detail) => {
+        acc[detail.path[0]] = detail.message;
+        return acc;
+      }, {});
+      setValidationErrors(errors);
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_REACT_BASE_URL}/manager/signup/${token}`,
@@ -50,11 +88,7 @@ const ManagerSignUpPage = () => {
         setError("");
         navigate("/login");
       } else {
-        if (response.data.errors) {
-          setFieldErrors(response.data.errors); // Display field errors
-        } else {
-          toast.error(response.data.message);
-        }
+        toast.error(response.data.message);
       }
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred");
@@ -120,14 +154,14 @@ const ManagerSignUpPage = () => {
               name="mobileno"
               placeholder="Enter your mobile number"
               className={`w-full px-4 py-2 border ${
-                fieldErrors.mobileno ? "border-red-500" : "border-gray-300"
+                validationErrors.mobileno ? "border-red-500" : "border-gray-300"
               } rounded-md focus:outline-none`}
               value={formData.mobileno}
               onChange={handleFormChange}
               required
             />
-            {fieldErrors.mobileno && (
-              <p className="text-red-500 text-sm">{fieldErrors.mobileno}</p>
+            {validationErrors.mobileno && (
+              <p className="text-red-500 text-sm">{validationErrors.mobileno}</p>
             )}
           </div>
           <div className="mb-6">
@@ -143,14 +177,14 @@ const ManagerSignUpPage = () => {
               name="password"
               placeholder="Create a password"
               className={`w-full px-4 py-2 border ${
-                fieldErrors.password ? "border-red-500" : "border-gray-300"
+                validationErrors.password ? "border-red-500" : "border-gray-300"
               } rounded-md focus:outline-none`}
               value={formData.password}
               onChange={handleFormChange}
               required
             />
-            {fieldErrors.password && (
-              <p className="text-red-500 text-sm">{fieldErrors.password}</p>
+            {validationErrors.password && (
+              <p className="text-red-500 text-sm">{validationErrors.password}</p>
             )}
           </div>
           <div className="flex justify-center">
