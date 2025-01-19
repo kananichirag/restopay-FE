@@ -7,7 +7,8 @@ import MenuReducer from "./slices/MenuSlice"
 import CustomerReducer from "./slices/CustomerSlice";
 import QrCodeReducer from "./slices/QrSlice";
 import RestaurantsReducer from './slices/RestaurantSlice';
-import OrdersReducer from "./slices/OrderSlice"
+import OrdersReducer from "./slices/OrderSlice";
+import StaffReducer from "./slices/StaffSlice";
 // Persist Configuration
 const persistConfig = {
     key: 'root',
@@ -21,7 +22,8 @@ const rootReducer = combineReducers({
     customer: CustomerReducer,
     qrCode: QrCodeReducer,
     restaurant: RestaurantsReducer,
-    orders: OrdersReducer
+    orders: OrdersReducer,
+    staff: StaffReducer
 });
 
 // Persist Reducer

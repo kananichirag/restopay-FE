@@ -8,6 +8,7 @@ import {
   fetchQrCodes,
 } from "../../store/slices/QrSlice";
 import { AiOutlineDelete } from "react-icons/ai";
+import LoadingCricle from "../LoadingCricle";
 
 function CreateQrCode() {
   const restaurantId = useSelector((state) => state.auth?.user?.restaurant_id);
@@ -17,6 +18,7 @@ function CreateQrCode() {
   const [error, setError] = useState("");
   const [selectedQrCode, setSelectedQrCode] = useState(null); // New state for QR code modal
   const dispatch = useDispatch();
+  const status = useSelector((state) => state.qrCode?.status);
 
   useEffect(() => {
     dispatch(fetchQrCodes());
@@ -109,6 +111,7 @@ function CreateQrCode() {
 
   return (
     <div className="p-6">
+      {status === "loading" && <LoadingCricle />}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Manage QR Codes</h1>
         <button
