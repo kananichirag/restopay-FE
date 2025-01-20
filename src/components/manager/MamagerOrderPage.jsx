@@ -15,21 +15,15 @@ function ManageOrderPage() {
     // Connect to socket
     const socket = io(import.meta.env.VITE_SOCKET_URL);
 
-    console.log("Socket connecting...");
-
     // Listen for new orders
-    socket.on("connect", () => {
-      console.log("Socket connected successfully");
-    });
+    socket.on("connect", () => {});
 
     socket.on("newOrder", (orderData) => {
-      console.log("New order received in manager:", orderData);
       dispatch(addOrder(orderData));
     });
 
     // Cleanup on component unmount
     return () => {
-      console.log("Cleaning up socket connection");
       socket.off("newOrder");
       socket.disconnect();
     };

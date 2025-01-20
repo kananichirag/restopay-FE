@@ -1,38 +1,66 @@
 import React, { useEffect, useState } from "react";
 import StaffModal from "../model/StaffModal ";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllStaffMembers } from "../../store/slices/StaffSlice";
+import {
+  deleteStaffMember,
+  fetchAllStaffMembers,
+} from "../../store/slices/StaffSlice";
 import LoadingCricle from "../LoadingCricle";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function AddStaff() {
   const dispatch = useDispatch();
-  const [staff, setStaff] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedStaff, setSelectedStaff] = useState(null);
   const status = useSelector((state) => state.staff?.status);
   const StaffMembers = useSelector((state) => state.staff?.staff_members);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllStaffMembers());
   }, []);
 
   const handleAddStaff = () => {
-    setSelectedStaff(null); // Clear selected staff for adding new
     setIsModalOpen(true);
   };
 
-  const handleEditStaff = (staffMember) => {
-    setSelectedStaff(staffMember); // Set selected staff for editing
-    setIsModalOpen(true);
-  };
+  const handleDeleteStaff = async (id) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("Authtoken");
+      if (!token) {
+        token.error("Token is Missing");
+        setLoading(false);
+        return;
+      }
 
-  const handleDeleteStaff = (id) => {
-    setStaff((prev) => prev.filter((staff) => staff.id !== id));
+      const response = await axios.delete(
+        `${import.meta.env.VITE_REACT_BASE_URL}/staff/delete-members/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        dispatch(deleteStaffMember(id));
+        setLoading(false);
+        toast.success(response.data.message);
+      } else {
+        setLoading(false);
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
   };
 
   return (
     <div className="p-6">
-      {status === "loading" && <LoadingCricle />}
+      {(status === "loading" && <LoadingCricle />) ||
+        (loading && <LoadingCricle />)}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Manage Staff</h1>
         <button
@@ -83,18 +111,12 @@ function AddStaff() {
                   </td>
                   <td className="px-4 py-2 text-center">{member.name}</td>
                   <td className="px-4 py-2 text-center">{member.role}</td>
-                  <td className="px-4 py-2 text-center">{member.contect }</td>
+                  <td className="px-4 py-2 text-center">{member.contect}</td>
                   <td className="px-4 py-2 text-center">{member.shift}</td>
                   <td className="px-4 py-2 text-center">
                     <button
-                      className="bg-yellow-500 text-white px-2 py-1 mx-1"
-                      onClick={() => handleEditStaff(member)}
-                    >
-                      Edit
-                    </button>
-                    <button
                       className="bg-red-500 text-white px-2 py-1 mx-1"
-                      onClick={() => handleDeleteStaff(member.id)}
+                      onClick={() => handleDeleteStaff(member._id)}
                     >
                       Delete
                     </button>
@@ -106,21 +128,7 @@ function AddStaff() {
         </table>
       </div>
 
-      {isModalOpen && (
-        <StaffModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          staff={selectedStaff}
-          onSave={(newStaff) => {
-            setStaff((prev) =>
-              selectedStaff
-                ? prev.map((s) => (s.id === newStaff.id ? newStaff : s))
-                : [...prev, { ...newStaff, id: Date.now().toString() }]
-            );
-            setIsModalOpen(false);
-          }}
-        />
-      )}
+      {isModalOpen && <StaffModal onClose={() => setIsModalOpen(false)} />}
     </div>
   );
 }
