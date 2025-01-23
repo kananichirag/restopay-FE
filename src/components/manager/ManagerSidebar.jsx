@@ -3,8 +3,12 @@ import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { FiUsers } from "react-icons/fi";
 import { MdOutlineInventory2 } from "react-icons/md";
 import { IoQrCodeOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { SlLogout } from "react-icons/sl";
 
 function Sidebar({ onSelect, selectedPage }) {
+  const navigate = useNavigate(); 
+
   const menuItems = [
     {
       name: "Menu",
@@ -27,7 +31,17 @@ function Sidebar({ onSelect, selectedPage }) {
       key: "orderpage",
       icon: <MdOutlineInventory2 size={25} />,
     },
+    {
+      name: "SignOut",
+      key: "signout",
+      icon: <SlLogout size={25} />,
+    },
   ];
+
+  const handleSignOut = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
 
   return (
     <div className="bg-red-500 text-white w-64 h-screen flex flex-col">
@@ -43,7 +57,13 @@ function Sidebar({ onSelect, selectedPage }) {
                 ? "bg-red-400 rounded"
                 : "hover:bg-red-400 rounded"
             }`}
-            onClick={() => onSelect(item.key)}
+            onClick={() => {
+              if (item.key === "signout") {
+                handleSignOut();
+              } else {
+                onSelect(item.key);
+              }
+            }}
           >
             <div className="flex items-center gap-5">
               {item.icon}
