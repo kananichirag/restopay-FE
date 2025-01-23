@@ -29,7 +29,7 @@ function Login() {
       "string.empty": "Password is required",
       "string.min": "Password must be at least 6 characters",
     }),
-    role: Joi.string().valid("admin", "manager", "cashier").required(),
+    role: Joi.string().valid("admin", "manager", "cashier", "chef").required(),
   });
 
   const handleFormChange = (e) => {
@@ -61,12 +61,14 @@ function Login() {
     try {
       setLoading(true);
       const { role, ...loginData } = formData;
-
+      console.log(loginData);
       let apiRoute = `${import.meta.env.VITE_REACT_BASE_URL}/auth/login`;
       if (role === "manager") {
         apiRoute = `${import.meta.env.VITE_REACT_BASE_URL}/manager/login`;
       } else if (role === "cashier") {
         apiRoute = `${import.meta.env.VITE_REACT_BASE_URL}/cashier/login`;
+      } else if (role === "chef") {
+        apiRoute = `${import.meta.env.VITE_REACT_BASE_URL}/chef/chef-login`;
       }
 
       const res = await axios.post(apiRoute, loginData);
@@ -81,6 +83,9 @@ function Login() {
       } else if (role === "cashier") {
         localStorage.setItem("Authtoken", res.data.data.Cashier_token);
         dispatch(login(res.data.data.cashier));
+      } else if (role === "chef") {
+        localStorage.setItem("Authtoken", res.data.Chef_token);
+        dispatch(login(res.data.chef));
       } else {
         localStorage.setItem("Authtoken", res.data.data.token);
         dispatch(login(res.data.data.user));
@@ -92,6 +97,8 @@ function Login() {
         navigate("/manager");
       } else if (role === "cashier") {
         navigate("/cashier-panel");
+      } else if (role === "chef") {
+        navigate("/chef-order");
       }
     } catch (error) {
       setLoading(false);
@@ -181,6 +188,7 @@ function Login() {
               <option value="admin">Admin</option>
               <option value="manager">Manager</option>
               <option value="cashier">Cashier</option>
+              <option value="chef">Chef</option>
             </select>
           </div>
 
