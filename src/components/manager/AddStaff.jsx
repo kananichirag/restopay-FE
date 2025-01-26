@@ -8,6 +8,7 @@ import {
 import LoadingCricle from "../LoadingCricle";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { fetchAllChefs } from "../../store/slices/ChefsSlice";
 
 function AddStaff() {
   const dispatch = useDispatch();
@@ -17,9 +18,12 @@ function AddStaff() {
 
   const status = useSelector((state) => state.staff?.status);
   const StaffMembers = useSelector((state) => state.staff?.staff_members);
+  const Chefs = useSelector((state) => state.chef?.chefs);
+  console.log(Chefs);
 
   useEffect(() => {
     dispatch(fetchAllStaffMembers());
+    dispatch(fetchAllChefs());
   }, []);
 
   const handleAddChef = async () => {
@@ -27,6 +31,7 @@ function AddStaff() {
       setLoading(true);
       if (!chefEmail || chefEmail === "") {
         toast.error("Email is Required");
+        setLoading(false);
         return;
       }
       const token = localStorage.getItem("Authtoken");
@@ -104,7 +109,7 @@ function AddStaff() {
 
       {/* Chef Section */}
       <div className="mb-6">
-        <h2 className="text-xl font-bold mb-4">Manage Chef</h2>
+        <h2 className="text-2xl font-bold mb-4">Manage Chef</h2>
         <div className="flex gap-4 mb-4">
           <input
             type="email"
@@ -119,6 +124,47 @@ function AddStaff() {
           >
             Add Chef
           </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto border">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="px-4 py-2 text-center">Name</th>
+                <th className="px-4 py-2 text-center">Email</th>
+                <th className="px-4 py-2 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Chefs?.length === 0 ? (
+                <tr>
+                  <td colSpan="4">
+                    <div className="flex flex-col items-center justify-center h-96">
+                      <img
+                        src="./no-data.png"
+                        alt="No Data"
+                        className="w-[520px] h-auto mb-4"
+                      />
+                      <h1 className="text-lg font-semibold text-gray-600">
+                        No Data Available
+                      </h1>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                Chefs?.map((chef) => (
+                  <tr key={chef.id} className="border-b">
+                    <td className="px-4 py-2 text-center">{chef.chef_name}</td>
+                    <td className="px-4 py-2 text-center">{chef.chef_email}</td>
+                    <td className="px-4 py-2 text-center">
+                      <button className="bg-red-500 text-white px-2 py-1 mx-1">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
