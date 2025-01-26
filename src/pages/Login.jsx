@@ -5,6 +5,7 @@ import { login } from "../store/slices/AuthSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Joi from "joi";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ function Login() {
     role: "cashier",
   });
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -61,7 +63,6 @@ function Login() {
     try {
       setLoading(true);
       const { role, ...loginData } = formData;
-      console.log(loginData);
       let apiRoute = `${import.meta.env.VITE_REACT_BASE_URL}/auth/login`;
       if (role === "manager") {
         apiRoute = `${import.meta.env.VITE_REACT_BASE_URL}/manager/login`;
@@ -144,7 +145,7 @@ function Login() {
           </div>
 
           {/* Password Field */}
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label
               htmlFor="password"
               className="block text-gray-700 text-sm font-medium mb-2"
@@ -152,7 +153,7 @@ function Login() {
               Password
             </label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               autoComplete="current-password"
@@ -164,6 +165,16 @@ function Login() {
               onChange={handleFormChange}
               disabled={loading}
             />
+            <div
+              className="absolute top-9 right-3 cursor-pointer"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <AiFillEye size={20} className="text-gray-600" />
+              ) : (
+                <AiFillEyeInvisible size={20} className="text-gray-600" />
+              )}
+            </div>
             {errors.password && (
               <p className="text-red-500 text-sm">{errors.password}</p>
             )}
