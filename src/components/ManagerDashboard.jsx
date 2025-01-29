@@ -27,12 +27,14 @@ function ManagerDashboard() {
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       {/* Sidebar */}
       <ManagerSidebar onSelect={setSelectedPage} selectedPage={selectedPage} />
 
       {/* Content Area */}
-      <div className="flex-1 bg-gray-100 min-h-screen">{renderContent()}</div>
+      <div className="flex-1 bg-gray-100 min-h-screen overflow-hidden">
+        {renderContent()}
+      </div>
     </div>
   );
 }

@@ -19,7 +19,6 @@ function AddStaff() {
   const status = useSelector((state) => state.staff?.status);
   const StaffMembers = useSelector((state) => state.staff?.staff_members);
   const Chefs = useSelector((state) => state.chef?.chefs);
-  console.log(Chefs);
 
   useEffect(() => {
     dispatch(fetchAllStaffMembers());
@@ -87,7 +86,6 @@ function AddStaff() {
           },
         }
       );
-      console.log(response.data);
       if (response.data.success) {
         dispatch(deleteStaffMember(id));
         setLoading(false);
@@ -103,7 +101,7 @@ function AddStaff() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 h-screen overflow-y-auto">
       {(status === "loading" && <LoadingCricle />) ||
         (loading && <LoadingCricle />)}
 
@@ -138,7 +136,7 @@ function AddStaff() {
               {Chefs?.length === 0 ? (
                 <tr>
                   <td colSpan="4">
-                    <div className="flex flex-col items-center justify-center h-96">
+                    <div className="flex flex-col items-center justify-center ">
                       <img
                         src="./no-data.png"
                         alt="No Data"
@@ -169,7 +167,7 @@ function AddStaff() {
       </div>
 
       {/* Staff Section */}
-      <div className="mb-6">
+      <div className="">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Manage Staff</h1>
           <button

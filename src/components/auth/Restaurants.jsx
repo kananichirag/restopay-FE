@@ -72,7 +72,6 @@ function Restaurants() {
         setLoading(false);
         toast.error(response.data.message);
       }
-      console.log(response.data);
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -255,7 +254,7 @@ function Restaurants() {
             <div className="flex justify-end space-x-4 p-6 border-t">
               <button
                 type="button"
-                // onClick={resetForm}
+                onClick={() => setIsModalOpen(false)}
                 className="px-4 py-2 bg-gray-300 rounded-lg shadow hover:bg-gray-400 transition"
               >
                 Cancel
