@@ -10,6 +10,7 @@ import RestaurantsReducer from './slices/RestaurantSlice';
 import OrdersReducer from "./slices/OrderSlice";
 import StaffReducer from "./slices/StaffSlice";
 import ChefsReducer from "./slices/ChefsSlice";
+import InventoryReducer from './slices/InventorySlice';
 // Persist Configuration
 const persistConfig = {
     key: 'root',
@@ -25,7 +26,8 @@ const rootReducer = combineReducers({
     restaurant: RestaurantsReducer,
     orders: OrdersReducer,
     staff: StaffReducer,
-    chef: ChefsReducer
+    chef: ChefsReducer,
+    inventory: InventoryReducer
 });
 
 // Persist Reducer

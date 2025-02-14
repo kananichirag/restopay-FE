@@ -1,19 +1,17 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { addInventory } from "../../store/slices/InventorySlice";
 
-function InventoryModal({ isOpen, onClose, inventory, onSave }) {
+function InventoryModal({ isOpen, setIsModalOpen }) {
   const [formData, setFormData] = useState({
     name: "",
-    stock: "",
+    sender: "",
     quantity: "",
+    total_amount: null,
   });
-
-  useEffect(() => {
-    if (inventory) {
-      setFormData({
-        ...inventory,
-      });
-    }
-  }, [inventory]);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,9 +21,38 @@ function InventoryModal({ isOpen, onClose, inventory, onSave }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    try {
+      if (!formData.name || !formData.sender || !formData.quantity) {
+        toast.error("All fields are required");
+        return;
+      }
+      const token = localStorage.getItem("Authtoken");
+      if (!token) {
+        toast.error("Token is required");
+        return;
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_REACT_BASE_URL}/inventory/add`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        toast.success(response.data.message);
+        dispatch(addInventory(response.data.inventory));
+        setIsModalOpen(false);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -35,10 +62,8 @@ function InventoryModal({ isOpen, onClose, inventory, onSave }) {
       }`}
     >
       <div className="bg-white p-6 rounded-md w-96">
-        <h2 className="text-2xl font-bold mb-4">
-          {inventory ? "Edit" : "Add"} Inventory
-        </h2>
-        <form onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-bold mb-4">Add Inventory</h2>
+        <form>
           <div className="mb-4">
             <label className="block text-gray-700">Item Name</label>
             <input
@@ -51,10 +76,10 @@ function InventoryModal({ isOpen, onClose, inventory, onSave }) {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700">Stock</label>
+            <label className="block text-gray-700">Sender</label>
             <input
-              type="number"
-              name="stock"
+              type="text"
+              name="sender"
               value={formData.stock}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-md"
@@ -64,9 +89,21 @@ function InventoryModal({ isOpen, onClose, inventory, onSave }) {
           <div className="mb-4">
             <label className="block text-gray-700">Quantity</label>
             <input
-              type="number"
+              type="text"
               name="quantity"
               value={formData.quantity}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700">Total Amount</label>
+            <input
+              type="Number"
+              name="total_amount"
+              value={formData.total_amount}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-md"
               required
@@ -76,13 +113,14 @@ function InventoryModal({ isOpen, onClose, inventory, onSave }) {
           <div className="flex justify-end mt-6">
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => setIsModalOpen(false)}
               className="bg-gray-500 text-white px-4 py-2 rounded-md mr-4"
             >
               Cancel
             </button>
             <button
               type="submit"
+              onClick={handleSubmit}
               className="bg-blue-500 text-white px-4 py-2 rounded-md"
             >
               Save
