@@ -10,6 +10,11 @@ import {
   emptyCart,
 } from "../../store/slices/CustomerSlice";
 import LoadingCricle from "../LoadingCricle";
+import {
+  connectSocket,
+  disconnectSocket,
+  emitNewOrder,
+} from "../../socket/socket";
 import io from "socket.io-client";
 
 const socket = io(import.meta.env.VITE_SOCKET_URL);
@@ -99,18 +104,28 @@ function CheckoutPage() {
             },
           })
         );
-        socket.emit("newOrder", {
+        connectSocket();
+        emitNewOrder({
           orderData: {
             ...response.data.order,
             payment_status: "Completed",
           },
         });
+
+        setTimeout(() => {
+          disconnectSocket();
+        }, 5000);
         navigate(`/menu/${restaurantId}/${tableNumber}`);
         setLoading(false);
       } else {
         dispatch(emptyCart());
         dispatch(addToCustomerOrder({ orderData: response?.data.order }));
-        socket.emit("newOrder", { orderData: response?.data.order });
+        connectSocket();
+        emitNewOrder({ orderData: response?.data.order });
+  
+        setTimeout(() => {
+          disconnectSocket();
+        }, 5000);
         toast.success(response.data.message);
         navigate(`/menu/${restaurantId}/${tableNumber}`);
         setLoading(false);
