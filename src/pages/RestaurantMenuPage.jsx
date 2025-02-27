@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addToCart,
   fetchCustomerMenuItems,
+  updateOrderStatusCustomer,
 } from "../store/slices/CustomerSlice";
 import { toast } from "react-toastify";
 import CartSidebar from "../components/User/CartSidebar";
@@ -13,6 +14,7 @@ import { CiHeart } from "react-icons/ci";
 import { IoBagHandleOutline } from "react-icons/io5";
 import OrderSidebar from "../components/User/OrderSidebar";
 import FavouriteSidebar from "../components/User/FavoutiteSidebar";
+import io from "socket.io-client";
 
 function RestaurantMenuPage() {
   const { restaurantId, tableNumber } = useParams();
@@ -20,13 +22,29 @@ function RestaurantMenuPage() {
   const location = useLocation();
   const MenuItems = useSelector((state) => state.customer?.menu?.items);
   const CartCount = useSelector((state) => state.customer?.cart?.length);
-  const OrderCount = useSelector((state) => state.customer?.placeded_orders?.length);
+  const OrderCount = useSelector(
+    (state) => state.customer?.placeded_orders?.length
+  );
 
   useEffect(() => {
     if (location.state?.openCart) {
       setCartSidebarOpen(true);
     }
   }, [location.state]);
+
+  useEffect(() => {
+    const socket = io(import.meta.env.VITE_SOCKET_URL);
+
+    socket.on("UpdateOrder", (order) => {
+      console.log("Order Updated", order);
+      dispatch(updateOrderStatusCustomer(order));
+    });
+
+    return () => {
+      socket.off("UpdateOrder");
+      socket.disconnect();
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     localStorage.setItem("restaurantId", restaurantId);
@@ -121,7 +139,10 @@ function RestaurantMenuPage() {
           />
         </div>
         <div className="flex text-sm relative">
-          {/* Cart Icon */}
+          <h1 className="bg-green-500 px-4 py-2 text-white rounded-full ">
+            Search
+          </h1>
+          {/* Cart Icon
           <FiShoppingCart
             size={28}
             className="text-white cursor-pointer"
@@ -129,7 +150,7 @@ function RestaurantMenuPage() {
           />
           <span className="absolute top-[-8px] right-[-8px] bg-green-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
             {CartCount}
-          </span>
+          </span> */}
         </div>
       </div>
 
