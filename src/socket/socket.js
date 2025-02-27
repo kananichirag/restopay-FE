@@ -30,3 +30,9 @@ export const emitNewOrder = (orderData) => {
         socket.emit("newOrder", orderData);
     }
 };
+
+export const UpdateOrder = (order) => {
+    if (socket) {
+        socket.emit("UpdateOrder", order);
+    }
+};

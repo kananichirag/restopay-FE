@@ -54,6 +54,17 @@ const currentOrdersSlice = createSlice({
                 toast.error('Invalid order data or Razorpay Order ID');
             }
         },
+        updateOrderStatus: (state, action) => {
+            const { orderId, newStatus } = action.payload;
+            if (orderId && newStatus) {
+                const orderIndex = state.current_orders.findIndex((order) => order.order_id === orderId);
+                if (orderIndex !== -1) {
+                    state.current_orders[orderIndex].status = newStatus;
+                }
+            } else {
+                toast.error('Invalid Order ID or Status');
+            }
+        },
 
     },
     extraReducers: (builder) => {
@@ -72,8 +83,8 @@ const currentOrdersSlice = createSlice({
                 state.current_orders = [];
             });
     }
-    
+
 });
 
-export const { addOrder } = currentOrdersSlice.actions;
+export const { addOrder, updateOrderStatus } = currentOrdersSlice.actions;
 export default currentOrdersSlice.reducer;
