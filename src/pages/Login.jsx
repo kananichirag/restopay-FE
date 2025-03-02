@@ -11,7 +11,7 @@ function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "cashier",
+    role: "manager",
   });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -198,7 +198,7 @@ function Login() {
             >
               <option value="admin">Admin</option>
               <option value="manager">Manager</option>
-              <option value="cashier">Cashier</option>
+              {/* <option value="cashier">Cashier</option> */}
               <option value="chef">Chef</option>
             </select>
           </div>

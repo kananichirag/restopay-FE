@@ -7,13 +7,14 @@ export const fetchMenuItems = createAsyncThunk(
     async (_, { getState, rejectWithValue }) => {
         try {
             const state = getState();
-            const restaurantId = state.auth.user.restaurant_id;
-            if (!restaurantId) {
+            const adminId = state.auth.user._id;
+            console.log('adminId', adminId);
+            if (!adminId) {
                 throw new Error('Restaurant ID is missing');
             }
 
             const response = await axios.get(
-                `${import.meta.env.VITE_REACT_BASE_URL}/menu/getallitems/${restaurantId}`
+                `${import.meta.env.VITE_REACT_BASE_URL}/menu/getmenu/${adminId}`
             );
 
             if (response.data.success === false) {

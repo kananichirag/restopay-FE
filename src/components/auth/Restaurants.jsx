@@ -30,7 +30,7 @@ function Restaurants() {
   const headerGroups = [
     {
       headers: [
-        { render: () => "Restaurant Name", getHeaderProps: () => ({}) },
+        { render: () => "Branche Name", getHeaderProps: () => ({}) },
         { render: () => "Location", getHeaderProps: () => ({}) },
         { render: () => "Manager", getHeaderProps: () => ({}) },
         { render: () => "Manager Email", getHeaderProps: () => ({}) },
@@ -115,12 +115,12 @@ function Restaurants() {
       {status === "loading" && <LoadingCricle />}
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Restaurants</h1>
+        <h1 className="text-2xl font-bold">Branches</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Add Restaurant
+          Add branche
         </button>
       </div>
 
@@ -157,8 +157,7 @@ function Restaurants() {
                   <td className="px-4 py-3 border-b">
                     {restaurant.manager_email}
                   </td>
-                  <td className="flex gap-3 px-4 py-3 border-b">
-                    <button className="text-blue-500">Edit</button>
+                  <td className="flex gap-3 px-6 py-3 border-b">
                     <button
                       type="submit"
                       className="text-blue-500"
@@ -188,14 +187,14 @@ function Restaurants() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl w-[60%] max-w-4xl max-h-[90vh] flex flex-col">
             <h2 className="text-2xl font-extrabold text-gray-700 p-6 border-b">
-              Add Restaurant
+              Add branche
             </h2>
             <div className="overflow-y-auto p-6 flex-grow scrollbar-custom">
               <form className="space-y-6">
                 {/* Restaurant Name */}
                 <div>
                   <label className="block text-sm font-medium text-gray-600">
-                    Restaurant Name
+                    Branche Name
                   </label>
                   <input
                     type="text"

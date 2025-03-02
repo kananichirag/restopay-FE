@@ -52,13 +52,32 @@ const inventorysSlice = createSlice({
     reducers: {
         addInventory: (state, action) => {
             const inventory = action.payload;
-            console.log(inventory);
             if (inventory) {
                 state.inventorys.push(inventory);
             } else {
                 toast.error('Invalid inventory data');
             }
         },
+
+        updateInventory: (state, action) => {
+            const updatedInventory = action.payload;
+            if (updatedInventory && updatedInventory._id) {
+                const existingInventory = state.inventorys.find(
+                    (inventory) => inventory._id === updatedInventory._id
+                );
+                if (existingInventory) {
+                    // Only update fields that exist in the payload
+                    Object.keys(updatedInventory).forEach((key) => {
+                        if (key !== "_id") {
+                            existingInventory[key] = updatedInventory[key];
+                        }
+                    });
+                }
+            } else {
+                toast.error("Invalid inventory data");
+            }
+        },
+
 
         removeInventory: (state, action) => {
             const id = action.payload;
@@ -87,5 +106,5 @@ const inventorysSlice = createSlice({
 
 });
 
-export const { addInventory, removeInventory } = inventorysSlice.actions;
+export const { addInventory, removeInventory, updateInventory } = inventorysSlice.actions;
 export default inventorysSlice.reducer;

@@ -117,7 +117,7 @@ function AddStaff() {
             onChange={(e) => setChefEmail(e.target.value)}
           />
           <button
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-green-600"
             onClick={handleAddChef}
           >
             Add Chef

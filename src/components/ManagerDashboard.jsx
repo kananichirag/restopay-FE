@@ -7,7 +7,7 @@ import CreateQrCode from "./manager/CreateQrCode";
 import MamagerOrderPage from "./manager/MamagerOrderPage";
 
 function ManagerDashboard() {
-  const [selectedPage, setSelectedPage] = useState("addMenuItem");
+  const [selectedPage, setSelectedPage] = useState("addStaff");
 
   const renderContent = () => {
     switch (selectedPage) {

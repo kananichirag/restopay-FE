@@ -31,7 +31,7 @@ function AddMenuItem() {
   const [editingItemid, setEditingItemId] = useState(null);
   const disptach = useDispatch();
   const status = useSelector((state) => state.menu.status);
-  const restaurantId = useSelector((state) => state.auth?.user?.restaurant_id);
+  const adminId = useSelector((state) => state.auth?.user?._id);
   const MenuItems = useSelector((state) => state.menu?.menu?.items);
   const [uploadedImage, setUploadedImage] = useState(null);
 
@@ -115,8 +115,8 @@ function AddMenuItem() {
   const handleDeleteItem = async (id) => {
     try {
       const token = localStorage.getItem("Authtoken");
-      if (!restaurantId) {
-        toast.error("Restaurant ID is missing");
+      if (!adminId) {
+        toast.error("adminId  is missing");
         return;
       }
       const res = await axios.delete(
@@ -126,7 +126,7 @@ function AddMenuItem() {
             Authorization: `Bearer ${token}`,
           },
           data: {
-            restaurantId,
+            adminId,
             ItemId: id,
           },
         }
@@ -146,12 +146,12 @@ function AddMenuItem() {
   const handleUpdateItem = async () => {
     try {
       const token = localStorage.getItem("Authtoken");
-      if (!restaurantId) {
+      if (!adminId) {
         toast.error("Restaurant ID is missing");
         return;
       }
       const res = await axios.put(
-        `${import.meta.env.VITE_REACT_BASE_URL}/menu/update/${restaurantId}`,
+        `${import.meta.env.VITE_REACT_BASE_URL}/menu/update/${adminId}`,
         formData,
         {
           headers: {

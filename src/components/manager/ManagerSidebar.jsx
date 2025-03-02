@@ -7,14 +7,14 @@ import { useNavigate } from "react-router-dom";
 import { SlLogout } from "react-icons/sl";
 
 function Sidebar({ onSelect, selectedPage }) {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const menuItems = [
-    {
-      name: "Menu",
-      key: "addMenuItem",
-      icon: <MdOutlineRestaurantMenu size={25} />,
-    },
+    // {
+    //   name: "Menu",
+    //   key: "addMenuItem",
+    //   icon: <MdOutlineRestaurantMenu size={25} />,
+    // },
     { name: "Add Staff", key: "addStaff", icon: <FiUsers size={25} /> },
     {
       name: "Inventory",
