@@ -12,6 +12,7 @@ import {
 import { toast } from "react-toastify";
 import axios from "axios";
 import LoadingCricle from "../LoadingCricle";
+import { useSelector } from "react-redux";
 
 // Register Chart.js components
 ChartJS.register(
@@ -28,6 +29,7 @@ function Reports() {
   const [loading, setLoading] = useState(false);
   const [reports, setReports] = useState(null);
   const [colorMapping, setColorMapping] = useState({});
+  const adminId = useSelector((state) => state.auth?.user?._id);
 
   const generateLightColor = () => {
     const r = Math.floor(Math.random() * 156) + 100; // Keep RGB values high for light colors
@@ -47,7 +49,7 @@ function Reports() {
       }
 
       const response = await axios.get(
-        `${import.meta.env.VITE_REACT_BASE_URL}/report/get-report`,
+        `${import.meta.env.VITE_REACT_BASE_URL}/report/get-report/${adminId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -134,7 +136,7 @@ function Reports() {
 
   return (
     <div className="p-6 h-full overflow-auto">
-      <h1 className="text-3xl font-bold mb-6">Restaurant Reports</h1>
+      <h1 className="text-3xl font-bold mb-6">Branches Reports</h1>
       {loading && <LoadingCricle />}
       {/* Dropdown for selecting a restaurant */}
       {reports && (
@@ -144,7 +146,7 @@ function Reports() {
               className="block mb-2 text-lg font-bold"
               htmlFor="restaurant-select"
             >
-              Select a Restaurant:
+              Select a Branche:
             </label>
             <select
               id="restaurant-select"
@@ -152,7 +154,7 @@ function Reports() {
               value={selectedRestaurant}
               onChange={(e) => setSelectedRestaurant(e.target.value)}
             >
-              <option value="all">All Restaurants</option>
+              <option value="all">All Branches</option>
               {reports?.restaurantBreakdown.map((r) => (
                 <option key={r.name} value={r.name}>
                   {r.name}

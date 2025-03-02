@@ -4,6 +4,7 @@ import OrderHistory from "./OrderHistory";
 import Reports from "./Reports";
 import Restaurants from "./Restaurants";
 import Users from "./Users";
+import AddMenuItem from "../manager/AddMenuitem";
 
 function AdminDashboard() {
   const [selectedPage, setSelectedPage] = useState("orderHistory");
@@ -19,6 +20,8 @@ function AdminDashboard() {
         return <Restaurants />;
       case "users":
         return <Users />;
+      case "menu":
+        return <AddMenuItem />;
       default:
         return <div>Select an option from the sidebar</div>;
     }

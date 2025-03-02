@@ -5,6 +5,7 @@ import { SiHomeassistantcommunitystore } from "react-icons/si";
 import { FaUsers } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { SlLogout } from "react-icons/sl";
+import { MdOutlineRestaurantMenu } from "react-icons/md";
 
 function AdminSidebar({ onSelect, selectedPage }) {
   const navigate = useNavigate();
@@ -13,10 +14,11 @@ function AdminSidebar({ onSelect, selectedPage }) {
     { id: "reports", label: "Reports", icon: <RiPieChart2Fill /> },
     {
       id: "restaurants",
-      label: "Restaurants",
+      label: "Branches",
       icon: <SiHomeassistantcommunitystore />,
     },
-    { id: "users", label: "Users", icon: <FaUsers /> },
+    { id: "users", label: "All Members", icon: <FaUsers /> },
+    { id: "menu", label: "Menu", icon: <MdOutlineRestaurantMenu size={25} /> },
   ];
 
   const handleSignOut = () => {
