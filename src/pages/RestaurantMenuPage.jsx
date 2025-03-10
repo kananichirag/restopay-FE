@@ -182,8 +182,9 @@ function RestaurantMenuPage() {
             className="px-4 py-1 border rounded-lg shadow-sm outline-none shadow-red-300 bg-white"
           >
             <option value="All">All</option>
-            <option value="Food">Food</option>
-            <option value="Beverage">Beverage</option>
+            <option value="Fast Food">Fast Food</option>
+            <option value="Chinese food">Chinese food</option>
+            <option value="Street Food">Street Food</option>
           </select>
         </div>
 

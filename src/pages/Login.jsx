@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Joi from "joi";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import ForgotPasswordModal from "../components/model/ForgotPasswordModal";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const schema = Joi.object({
     email: Joi.string()
@@ -37,7 +39,7 @@ function Login() {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setErrors({ ...errors, [name]: "" });
+    setErrors({ ...errors, [name]: "" }); // Clear error when user changes input
   };
 
   const validateForm = () => {
@@ -108,113 +110,101 @@ function Login() {
   };
 
   return (
-    <section className="bg-gray-100 py-16 min-h-screen">
-      <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
-          Login
-        </h2>
+    <div className="flex min-h-screen">
+      <div className="w-1/2 bg-red-500 flex items-center justify-center">
+        <div className="p-4 rounded-lg">
+          <img
+            src="./online-order-hero_lg.webp"
+            alt="Burger"
+            className="max-w-[500px] h-auto"
+          />
+        </div>
+      </div>
+      <div className="w-1/2 bg-[#F5F5F5] flex items-center justify-center">
+        <div className="w-full max-w-md px-8">
+          <h2 className="text-3xl font-bold mb-6 text-center">
+            Login to your account
+          </h2>
 
-        <form
-          className="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md"
-          onSubmit={handleSubmit}
-        >
-          {/* Email Field */}
-          <div className="mb-6">
-            <label
-              htmlFor="email"
-              className="block text-gray-700 text-sm font-medium mb-2"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              autoComplete="email"
-              className={`w-full px-4 py-2 border ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-red-500`}
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleFormChange}
-              disabled={loading}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
-            )}
-          </div>
-
-          {/* Password Field */}
-          <div className="mb-6 relative">
-            <label
-              htmlFor="password"
-              className="block text-gray-700 text-sm font-medium mb-2"
-            >
-              Password
-            </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              autoComplete="current-password"
-              className={`w-full px-4 py-2 border ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-red-500`}
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleFormChange}
-              disabled={loading}
-            />
-            <div
-              className="absolute top-9 right-3 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <AiFillEye size={20} className="text-gray-600" />
-              ) : (
-                <AiFillEyeInvisible size={20} className="text-gray-600" />
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                autoComplete="email"
+                className={`w-full px-4 py-3 border ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-red-500`}
+                placeholder="E-mail"
+                value={formData.email}
+                onChange={handleFormChange}
+                disabled={loading}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
               )}
             </div>
-            {errors.password && (
-              <p className="text-red-500 text-sm">{errors.password}</p>
-            )}
-          </div>
 
-          {/* Role Selector */}
-          <div className="mb-10">
-            <label
-              htmlFor="role"
-              className="block text-gray-700 text-sm font-medium mb-2"
-            >
-              Role
-            </label>
-            <select
-              id="role"
-              name="role"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-              value={formData.role}
-              onChange={handleFormChange}
-              disabled={loading}
-            >
-              <option value="admin">Admin</option>
-              <option value="manager">Manager</option>
-              {/* <option value="cashier">Cashier</option> */}
-              <option value="chef">Chef</option>
-            </select>
-          </div>
+            <div className="mb-4 relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                autoComplete="current-password"
+                className={`w-full px-4 py-3 border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-red-500`}
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleFormChange}
+                disabled={loading}
+              />
+              <div
+                className="absolute top-4 right-3 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <AiFillEye size={20} className="text-gray-600" />
+                ) : (
+                  <AiFillEyeInvisible size={20} className="text-gray-600" />
+                )}
+              </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+              )}
+            </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-center">
+            <div className="mb-4">
+              <select
+                id="role"
+                name="role"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                value={formData.role}
+                onChange={handleFormChange}
+                disabled={loading}
+              >
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="chef">Chef</option>
+              </select>
+            </div>
+
             <button
               type="submit"
-              className="bg-red-500 text-white px-8 py-2 rounded-md hover:bg-red-600 transition duration-200"
+              className="w-full bg-red-500 text-white py-3 rounded-md hover:bg-red-600 transition duration-200"
             >
               {loading ? "Loading..." : "Login"}
             </button>
+          </form>
+          <div className="text-right font-semibold mt-4">
+            <button onClick={(e) => setIsOpen(true)}>Forgot password?</button>
           </div>
-        </form>
+        </div>
       </div>
-    </section>
+
+      <ForgotPasswordModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </div>
   );
 }
 
