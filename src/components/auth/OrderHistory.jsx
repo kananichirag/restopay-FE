@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import LoadingCricle from "../LoadingCricle";
 import { useSelector } from "react-redux";
+import { ChevronDown, Search } from "lucide-react";
 
 function OrderHistory() {
   const [orders, setOrders] = useState({});
@@ -11,6 +12,7 @@ function OrderHistory() {
   const [searchOrder, setSearchOrder] = useState("");
   const [loading, setLoading] = useState(false);
   const adminId = useSelector((state) => state.auth?.user?._id);
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -33,7 +35,6 @@ function OrderHistory() {
     }
   };
 
-  // Handle restaurant filter
   const handleRestaurantChange = (e) => {
     const restaurant = e.target.value;
     setSelectedRestaurant(restaurant);
@@ -50,7 +51,6 @@ function OrderHistory() {
     setSearchOrder(query);
 
     if (!query) {
-      // If search is empty, reset to original state
       setFilteredOrders(orders);
       return;
     }
@@ -73,77 +73,115 @@ function OrderHistory() {
     setFilteredOrders(filtered);
   };
 
+  // Function to get status color
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
-    <div className="p-4">
+    <div className="bg-gray-50 min-h-screen p-8">
       {loading && <LoadingCricle />}
-      <h1 className="text-2xl font-bold mb-4">Order History</h1>
+      
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Order History</h1>
 
-      {/* Filters */}
-      <div className="flex gap-4 mb-4">
-        {/* Dropdown for restaurant selection */}
-        <select
-          className="border p-2 rounded"
-          value={selectedRestaurant}
-          onChange={handleRestaurantChange}
-        >
-          {restaurantNames.map((name, index) => (
-            <option key={index} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+        {/* Filters Container */}
+        <div className="bg-white shadow-md rounded-lg p-4 mb-6">
+          <div className="flex space-x-4">
+            {/* Restaurant Dropdown */}
+            <div className="relative flex-grow">
+              <select
+                className="w-full appearance-none bg-white border border-gray-300 rounded-md pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selectedRestaurant}
+                onChange={handleRestaurantChange}
+              >
+                {restaurantNames.map((name, index) => (
+                  <option key={index} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            </div>
 
-        {/* Search input for order number */}
-        <input
-          type="text"
-          className="border p-2 rounded"
-          placeholder="Search Order Number"
-          value={searchOrder}
-          onChange={handleSearchChange}
-        />
-      </div>
-
-      {/* Check if filteredOrders has data */}
-      {Object.keys(filteredOrders).length === 0 ? (
-        <p className="text-center text-xl text-gray-500">No orders found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="border p-2">Order Number</th>
-                <th className="border p-2">Branch</th>
-                <th className="border p-2">Total Amount</th>
-                <th className="border p-2">Payment Status</th>
-                <th className="border p-2">Order Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.keys(filteredOrders).map((restaurant) =>
-                filteredOrders[restaurant].orders.length > 0
-                  ? filteredOrders[restaurant].orders.map((order) => (
-                      <tr key={order.orderNumber} className="border">
-                        <td className="border p-2 text-center">
-                          {order.orderNumber}
-                        </td>
-                        <td className="border p-2 text-center">{restaurant}</td>
-                        <td className="border p-2 text-center">
-                          ₹{order.total_amount}
-                        </td>
-                        <td className="border p-2 text-center">
-                          {order.payment_status}
-                        </td>
-                        <td className="border p-2 text-center">
-                          {order.order_status}
-                        </td>
-                      </tr>
-                    ))
-                  : null
-              )}
-            </tbody>
-          </table>
+            {/* Search Input */}
+            <div className="relative flex-grow">
+              <input
+                type="text"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Search Order Number"
+                value={searchOrder}
+                onChange={handleSearchChange}
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Orders Table */}
+        {Object.keys(filteredOrders).length === 0 ? (
+          <div className="bg-white shadow-md rounded-lg p-8 text-center">
+            <p className="text-xl text-gray-500">No orders found.</p>
+          </div>
+        ) : (
+          <div className="bg-white shadow-md rounded-lg overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-100">
+                <tr>
+                  {['Order Number', 'Branch', 'Total Amount', 'Payment Status', 'Order Status'].map((header) => (
+                    <th 
+                      key={header} 
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {Object.keys(filteredOrders).map((restaurant) =>
+                  filteredOrders[restaurant].orders.length > 0
+                    ? filteredOrders[restaurant].orders.map((order) => (
+                        <tr key={order.orderNumber} className="hover:bg-gray-50">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {order.orderNumber}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {restaurant}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ₹{order.total_amount}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              order.payment_status.toLowerCase() === 'paid' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {order.payment_status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <span className={`px-2 inline-flex text-xs bg-green-300 leading-5 font-semibold rounded-full ${
+                              getStatusColor(order.order_status)
+                            }`}>
+                              {order.order_status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    : null
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

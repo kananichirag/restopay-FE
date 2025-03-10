@@ -12,6 +12,7 @@ import AdminDashboard from "./components/auth/AdminDashboard";
 import ManagerSignUpPage from "./pages/ManagerSignUpPage";
 import ChefSignUp from "./pages/ChefSignUp";
 import MasterChefPage from "./pages/MasterChefPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route
         path="/dashboard"
         element={<ManagerPrivateRoute element={<AdminDashboard />} />}
