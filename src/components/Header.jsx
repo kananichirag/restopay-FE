@@ -23,25 +23,19 @@ function Header() {
             href="#"
             className="hover:bg-red-100 text-gray-700 text-lg hover:text-red-700 px-4 py-2 rounded transition duration-200"
           >
-            Billing
+            Home
           </a>
           <a
             href="#"
             className="hover:bg-red-100 text-gray-700 text-lg hover:text-red-700 px-4 py-2 rounded transition duration-200"
           >
-            Inventory
+            Features
           </a>
           <a
             href="#"
             className="hover:bg-red-100 text-gray-700 text-lg hover:text-red-700 px-4 py-2 rounded transition duration-200"
           >
-            Reporting
-          </a>
-          <a
-            href="#"
-            className="hover:bg-red-100 text-gray-700 text-lg hover:text-red-700 px-4 py-2 rounded transition duration-200"
-          >
-            Menu
+            Demo
           </a>
         </nav>
 
@@ -86,7 +80,7 @@ function Header() {
                 href="#"
                 className="block text-gray-700 hover:bg-red-100 hover:text-red-700 px-4 py-2 rounded transition duration-200"
               >
-                Billing
+                Home
               </a>
             </li>
             <li>
@@ -94,7 +88,7 @@ function Header() {
                 href="#"
                 className="block text-gray-700 hover:bg-red-100 hover:text-red-700 px-4 py-2 rounded transition duration-200"
               >
-                Inventory
+                Features
               </a>
             </li>
             <li>

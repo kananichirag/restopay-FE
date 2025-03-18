@@ -77,10 +77,11 @@ const restaurantSlice = createSlice({
             .addCase(fetchRestaurants.pending, (state) => {
                 state.status = 'loading';
                 state.error = null;
+                state.restaurants = [];
             })
             .addCase(fetchRestaurants.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.restaurants = action.payload;
+                state.restaurants = action.payload || [];
             })
             .addCase(fetchRestaurants.rejected, (state, action) => {
                 state.status = 'failed';
