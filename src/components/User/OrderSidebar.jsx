@@ -76,7 +76,7 @@ function OrderSidebar({ isOpen, toggleSidebar }) {
                     Total: ₹{parseFloat(order.total_amount).toFixed(2)}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Status: {order.order_status} | Payment:{" "}
+                    Status: {order.status || "Processing"} | Payment:{" "}
                     {order.payment_status}
                   </p>
                 </div>

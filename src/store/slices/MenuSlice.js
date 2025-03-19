@@ -45,7 +45,7 @@ const menuSlice = createSlice({
     initialState,
     reducers: {
         addItem: (state, action) => {
-            state.menu.items.push(action.payload);
+            state.menu.items.unshift(action.payload);
         },
         deleteItem: (state, action) => {
             state.menu.items = state.menu.items.filter(item => item._id !== action.payload._id);

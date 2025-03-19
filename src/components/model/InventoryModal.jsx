@@ -12,6 +12,8 @@ function InventoryModal({ isOpen, setIsModalOpen }) {
     total_amount: null,
   });
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,16 +23,34 @@ function InventoryModal({ isOpen, setIsModalOpen }) {
     }));
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name) newErrors.name = "Inventory name is required";
+    if (!formData.sender) newErrors.sender = "Sender name is required";
+    if (!formData.quantity) newErrors.quantity = "Quantity is required";
+    if (!formData.total_amount)
+      newErrors.total_amount = "Total amount is required";
+    return newErrors;
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setLoading(false);
+      return;
+    }
     try {
       if (!formData.name || !formData.sender || !formData.quantity) {
         toast.error("All fields are required");
+        setLoading(false);
         return;
       }
       const token = localStorage.getItem("Authtoken");
       if (!token) {
         toast.error("Token is required");
+        setLoading(false);
         return;
       }
 
@@ -46,12 +66,16 @@ function InventoryModal({ isOpen, setIsModalOpen }) {
       if (response.data.success) {
         toast.success(response.data.message);
         dispatch(addInventory(response.data.inventory));
+        setLoading(false);
         setIsModalOpen(false);
       } else {
         toast.error(response.data.message);
+        setLoading(false);
+        setIsModalOpen(false);
       }
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -74,6 +98,9 @@ function InventoryModal({ isOpen, setIsModalOpen }) {
               className="w-full px-4 py-2 border rounded-md"
               required
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Sender</label>
@@ -85,6 +112,9 @@ function InventoryModal({ isOpen, setIsModalOpen }) {
               className="w-full px-4 py-2 border rounded-md"
               required
             />
+            {errors.sender && (
+              <p className="text-red-500 text-sm mt-1">{errors.sender}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Quantity</label>
@@ -96,6 +126,9 @@ function InventoryModal({ isOpen, setIsModalOpen }) {
               className="w-full px-4 py-2 border rounded-md"
               required
             />
+            {errors.quantity && (
+              <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -108,6 +141,9 @@ function InventoryModal({ isOpen, setIsModalOpen }) {
               className="w-full px-4 py-2 border rounded-md"
               required
             />
+            {errors.total_amount && (
+              <p className="text-red-500 text-sm mt-1">{errors.total_amount}</p>
+            )}
           </div>
 
           <div className="flex justify-end mt-6">
@@ -123,7 +159,7 @@ function InventoryModal({ isOpen, setIsModalOpen }) {
               onClick={handleSubmit}
               className="bg-blue-500 text-white px-4 py-2 rounded-md"
             >
-              Save
+              {loading ? "Loading..." : "Add Inventory"}
             </button>
           </div>
         </form>

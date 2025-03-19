@@ -26,6 +26,7 @@ function CheckoutPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [userName, setUserName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const calculateTotal = () => {
@@ -35,18 +36,35 @@ function CheckoutPage() {
     );
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!userName) newErrors.userName = "User name is required";
+    if (!mobileNumber) newErrors.mobileNumber = "Mobile number is required";
+    else if (!/^\d{10}$/.test(mobileNumber)) {
+      newErrors.mobileNumber = "Mobile number must be exactly 10 digits";
+    }
+    return newErrors;
+  };
+
   const handlePayment = async () => {
     try {
       setLoading(true);
+      const validationErrors = validateForm();
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        setLoading(false);
+        return;
+      }
       if (!userName || !mobileNumber) {
         toast.error("Please fill in your name and mobile number.");
         setLoading(false);
         return;
       }
-      // if (!selectedPaymentMethod) {
-      //   toast.error("Please select a payment method.");
-      //   return;
-      // }
+      if (!selectedPaymentMethod) {
+        toast.error("Please select a payment method.");
+        setLoading(false);
+        return;
+      }
       const restaurantId = localStorage.getItem("restaurantId");
       const tableNumber = localStorage.getItem("tableNumber");
       const response = await axios.post(
@@ -122,7 +140,7 @@ function CheckoutPage() {
         dispatch(addToCustomerOrder({ orderData: response?.data.order }));
         connectSocket();
         emitNewOrder({ orderData: response?.data.order });
-  
+
         setTimeout(() => {
           disconnectSocket();
         }, 5000);
@@ -181,6 +199,9 @@ function CheckoutPage() {
                 placeholder="Enter your name"
                 className="mt-1 block w-full py-2 px-4 border  rounded-3xl  drop-shadow outline-none focus:outline-red-100"
               />
+              {errors.userName && (
+                <p className="text-red-500 text-sm mt-1">{errors.userName}</p>
+              )}
             </div>
             <div>
               <label
@@ -197,6 +218,11 @@ function CheckoutPage() {
                 placeholder="Enter your mobile number"
                 className="mt-1 block w-full py-2 px-4 borde  rounded-3xl drop-shadow outline-none focus:outline-red-100"
               />
+              {errors.mobileNumber && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.mobileNumber}
+                </p>
+              )}
             </div>
           </div>
         </div>

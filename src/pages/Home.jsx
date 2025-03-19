@@ -28,16 +28,19 @@ function Home() {
     // Clear previous errors
     setFormErrors({});
 
-    if (!name || !email || !password || !mobileno) {
-      setFormErrors({
-        name: !name ? "Name is required" : "",
-        email: !email ? "Email is required" : "",
-        password: !password ? "Password is required" : "",
-        mobileno: !mobileno ? "Mobile number is required" : "",
-      });
-      toast.error("Please fill all the fields", {
-        position: "top-right",
-      });
+    let errors = {};
+
+    if (!name) errors.name = "Name is required";
+    if (!email) errors.email = "Email is required";
+    if (!password) errors.password = "Password is required";
+    if (!mobileno) {
+      errors.mobileno = "Mobile number is required";
+    } else if (!/^\d{10}$/.test(mobileno)) {
+      errors.mobileno = "Mobile number must be exactly 10 digits";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       return;
     }
 
