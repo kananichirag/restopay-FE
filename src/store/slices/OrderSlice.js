@@ -49,7 +49,7 @@ const currentOrdersSlice = createSlice({
         addOrder: (state, action) => {
             const { orderData } = action.payload;
             if (orderData) {
-                state.current_orders.push(orderData);
+                state.current_orders.unshift(orderData);
             } else {
                 toast.error('Invalid order data or Razorpay Order ID');
             }

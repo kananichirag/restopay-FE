@@ -16,9 +16,10 @@ function CreateQrCode() {
   const [tableNumber, setTableNumber] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState("");
-  const [selectedQrCode, setSelectedQrCode] = useState(null); // New state for QR code modal
+  const [selectedQrCode, setSelectedQrCode] = useState(null);
   const dispatch = useDispatch();
   const status = useSelector((state) => state.qrCode?.status);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     dispatch(fetchQrCodes());
@@ -39,6 +40,7 @@ function CreateQrCode() {
     }
 
     try {
+      setLoading(true);
       const token = localStorage.getItem("Authtoken");
       const response = await axios.post(
         `${import.meta.env.VITE_REACT_BASE_URL}/manager/qrcode`,
@@ -55,11 +57,14 @@ function CreateQrCode() {
       if (response.data.success) {
         toast.success("QR Code Generated Successfully");
         dispatch(addQrCode(response.data.newQrCode));
+        setLoading(false);
         setIsModalOpen(false);
       } else {
+        setLoading(false);
         toast.error(response.data.message);
       }
     } catch (err) {
+      setLoading(false);
       console.error("Error generating QR code:", err);
       setError("Failed to generate QR code. Please try again.");
     }
@@ -209,7 +214,7 @@ function CreateQrCode() {
                   onClick={handleGenerateQR}
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                  Save
+                  {loading ? "Generating..." : "Generate"}
                 </button>
               </div>
             </form>

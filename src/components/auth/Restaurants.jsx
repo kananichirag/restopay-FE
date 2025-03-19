@@ -15,6 +15,7 @@ function Restaurants() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name: "",
     manager_name: "",
@@ -44,8 +45,33 @@ function Restaurants() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const ResetForm = () => {
+    setFormData({
+      name: "",
+      manager_name: "",
+      manager_email: "",
+      location: "",
+    });
+    setErrors({});
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name) newErrors.name = "Branche Name is required";
+    if (!formData.manager_name)
+      newErrors.manager_name = "Manager Name is required";
+    if (!formData.manager_email) newErrors.manager_email = "Email is required";
+    if (!formData.location) newErrors.location = "Location is required";
+    return newErrors;
+  };
+
   const handleAddRestaurant = async (e) => {
     e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       setLoading(true);
       const token = localStorage.getItem("Authtoken");
@@ -71,6 +97,7 @@ function Restaurants() {
         setIsModalOpen(false);
         setLoading(false);
         toast.error(response.data.message);
+        ResetForm();
       }
     } catch (error) {
       setLoading(false);
@@ -204,6 +231,9 @@ function Restaurants() {
                     className="w-full p-3 border border-gray-300 rounded-lg shadow-sm outline-none focus:drop-shadow focus:shadow-red-200"
                     required
                   />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                  )}
                 </div>
                 {/* Manager Name */}
                 <div>
@@ -218,6 +248,11 @@ function Restaurants() {
                     className="w-full p-3 border border-gray-300 rounded-lg shadow-sm outline-none focus:drop-shadow focus:shadow-red-200"
                     required
                   />
+                  {errors.manager_name && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.manager_name}
+                    </p>
+                  )}
                 </div>
                 {/* Email */}
                 <div>
@@ -232,6 +267,11 @@ function Restaurants() {
                     className="w-full p-3 border border-gray-300 rounded-lg shadow-sm outline-none focus:drop-shadow focus:shadow-red-200"
                     required
                   />
+                  {errors.manager_email && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.manager_email}
+                    </p>
+                  )}
                 </div>
                 {/* Location */}
                 <div>
@@ -246,6 +286,11 @@ function Restaurants() {
                     className="w-full p-3 border border-gray-300 rounded-lg shadow-sm outline-none focus:drop-shadow focus:shadow-red-200"
                     required
                   />
+                  {errors.location && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.location}
+                    </p>
+                  )}
                 </div>
               </form>
             </div>
@@ -253,7 +298,9 @@ function Restaurants() {
             <div className="flex justify-end space-x-4 p-6 border-t">
               <button
                 type="button"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setIsModalOpen(false), ResetForm();
+                }}
                 className="px-4 py-2 bg-gray-300 rounded-lg shadow hover:bg-gray-400 transition"
               >
                 Cancel

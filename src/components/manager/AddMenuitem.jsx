@@ -34,6 +34,7 @@ function AddMenuItem() {
   const adminId = useSelector((state) => state.auth?.user?._id);
   const MenuItems = useSelector((state) => state.menu?.menu?.items);
   const [uploadedImage, setUploadedImage] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     disptach(fetchMenuItems());
@@ -45,6 +46,18 @@ function AddMenuItem() {
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.price) newErrors.price = "Item price is required";
+    if (!formData.name) newErrors.name = "Item name is required";
+    if (!formData.quantity) newErrors.quantity = "Item quantity is required";
+    if (!formData.category) newErrors.category = "Item category is required";
+    if (!formData.description)
+      newErrors.description = "Item description is required";
+    if (!formData.image) newErrors.image = "Item image is required";
+    return newErrors;
   };
 
   const handleFileChange = (e) => {
@@ -72,6 +85,11 @@ function AddMenuItem() {
 
   const handleAddItem = async (e) => {
     e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       setLoading(true);
       const token = localStorage.getItem("Authtoken");
@@ -318,6 +336,9 @@ function AddMenuItem() {
                     className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
                     required
                   />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                  )}
                 </div>
                 {/* Price */}
                 <div>
@@ -332,6 +353,9 @@ function AddMenuItem() {
                     className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
                     required
                   />
+                  {errors.price && (
+                    <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+                  )}
                 </div>
                 {/* Category */}
                 <div>
@@ -345,6 +369,11 @@ function AddMenuItem() {
                     onChange={handleChange}
                     className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
                   />
+                  {errors.category && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.category}
+                    </p>
+                  )}
                 </div>
                 {/* Quantity */}
                 <div>
@@ -359,6 +388,11 @@ function AddMenuItem() {
                     className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
                     required
                   />
+                  {errors.quantity && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.quantity}
+                    </p>
+                  )}
                 </div>
                 {/* Description */}
                 <div>
@@ -372,6 +406,11 @@ function AddMenuItem() {
                     className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
                     rows="3"
                   />
+                  {errors.description && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.description}
+                    </p>
+                  )}
                 </div>
                 {/* Availability */}
                 <div className="flex items-center space-x-2">
@@ -441,6 +480,9 @@ function AddMenuItem() {
                     </>
                   )}
                 </div>
+                {errors.image && (
+                  <p className="text-red-500 text-sm mt-1">{errors.image}</p>
+                )}
               </form>
             </div>
             {/* Footer Buttons */}
