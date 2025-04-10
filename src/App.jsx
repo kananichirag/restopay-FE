@@ -13,6 +13,7 @@ import ManagerSignUpPage from "./pages/ManagerSignUpPage";
 import ChefSignUp from "./pages/ChefSignUp";
 import MasterChefPage from "./pages/MasterChefPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import posthog from "./posthog";
 
 function App() {
   return (

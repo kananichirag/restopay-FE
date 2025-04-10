@@ -9,6 +9,7 @@ import LoadingCricle from "../LoadingCricle";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { fetchAllChefs } from "../../store/slices/ChefsSlice";
+import posthog from "../../posthog";
 
 function AddStaff() {
   const dispatch = useDispatch();
@@ -54,6 +55,10 @@ function AddStaff() {
         setLoading(false);
         toast.success(response.data.message);
         setChefEmail("");
+        posthog.capture("chef_invited_by_manager", {
+          email: chefEmail,
+          role: "chef",
+        });
       } else {
         setLoading(false);
         toast.error(response.data.message);

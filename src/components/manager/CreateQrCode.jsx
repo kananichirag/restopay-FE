@@ -9,6 +9,7 @@ import {
 } from "../../store/slices/QrSlice";
 import { AiOutlineDelete } from "react-icons/ai";
 import LoadingCricle from "../LoadingCricle";
+import posthog from "../../posthog";
 
 function CreateQrCode() {
   const restaurantId = useSelector((state) => state.auth?.user?.restaurant_id);
@@ -59,6 +60,10 @@ function CreateQrCode() {
         dispatch(addQrCode(response.data.newQrCode));
         setLoading(false);
         setIsModalOpen(false);
+        posthog.capture("Qr_code_generated", {
+          restaurantId: restaurantId,
+          table_No: tableNumber,
+        });
       } else {
         setLoading(false);
         toast.error(response.data.message);
