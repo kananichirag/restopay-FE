@@ -9,6 +9,7 @@ import {
 } from "../../store/slices/CustomerSlice";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import posthog from "../../posthog";
 
 function CartSidebar({ isOpen, toggleSidebar }) {
   const dispatch = useDispatch();
@@ -16,14 +17,23 @@ function CartSidebar({ isOpen, toggleSidebar }) {
   const cartItems = useSelector((state) => state.customer?.cart);
 
   const handleRemoveItem = (id) => {
+    posthog.capture("decrease_quantity", {
+      item_id: id,
+    });
     dispatch(removeFromCart(id));
   };
 
   const handleIncrementQuantity = (id) => {
+    posthog.capture("increase_quantity", {
+      item_id: id,
+    });
     dispatch(incrementQuantity(id));
   };
 
   const handleDecrementQuantity = (id) => {
+    posthog.capture("remove_item", {
+      item_id: id,
+    });
     dispatch(decrementQuantity(id));
   };
 
@@ -35,6 +45,9 @@ function CartSidebar({ isOpen, toggleSidebar }) {
   };
 
   const handleCheckout = () => {
+    posthog.capture("checkout_for_order", {
+      name: "Checkout",
+    });
     navigate("/checkout");
   };
 

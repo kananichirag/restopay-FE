@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Joi from "joi";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import ForgotPasswordModal from "../components/model/ForgotPasswordModal";
+import posthog from "../posthog";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -80,6 +81,16 @@ function Login() {
         toast.error(res.data.message);
         return;
       }
+
+      posthog.capture("user_logged_in", {
+        email: formData.email,
+        role: role,
+      });
+
+      posthog.identify(formData.email, {
+        role: role,
+      });
+
       if (role === "manager") {
         localStorage.setItem("Authtoken", res.data.data.Manager_token);
         dispatch(login(res.data.data.manager));

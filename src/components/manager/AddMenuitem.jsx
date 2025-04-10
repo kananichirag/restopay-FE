@@ -14,6 +14,7 @@ import {
   fetchMenuItems,
   updateItem,
 } from "../../store/slices/MenuSlice";
+import posthog from "../../posthog";
 
 function AddMenuItem() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,6 +118,13 @@ function AddMenuItem() {
           description: "",
           isAvailable: true,
           image: null,
+        });
+        posthog.capture("menu_item_added", {
+          name: formData.name,
+          price: formData.price,
+          category: formData.category,
+          quantity: formData.quantity,
+          description: formData.description,
         });
       } else {
         toast.error(res.data.message);

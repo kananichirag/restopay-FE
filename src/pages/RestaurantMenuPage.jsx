@@ -15,6 +15,7 @@ import { IoBagHandleOutline } from "react-icons/io5";
 import OrderSidebar from "../components/User/OrderSidebar";
 import FavouriteSidebar from "../components/User/FavoutiteSidebar";
 import io from "socket.io-client";
+import posthog from "../posthog";
 
 function RestaurantMenuPage() {
   const { restaurantId, tableNumber } = useParams();
@@ -94,6 +95,11 @@ function RestaurantMenuPage() {
             maxWidth: "70%",
             marginTop: "1rem",
           },
+        });
+        posthog.capture("add_to_cart", {
+          item_name: item?.name,
+          category: item?.category,
+          price: item?.price,
         });
       } else {
         toast.error("This item is currently unavailable.");

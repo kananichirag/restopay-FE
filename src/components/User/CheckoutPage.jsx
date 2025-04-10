@@ -18,6 +18,7 @@ import {
 import io from "socket.io-client";
 
 const socket = io(import.meta.env.VITE_SOCKET_URL);
+import posthog from "../../posthog";
 
 function CheckoutPage() {
   const navigate = useNavigate();
@@ -135,6 +136,9 @@ function CheckoutPage() {
         }, 5000);
         navigate(`/menu/${restaurantId}/${tableNumber}`);
         setLoading(false);
+        posthog.capture("placed_order_by_online_payment", {
+          method: "Online",
+        });
       } else {
         dispatch(emptyCart());
         dispatch(addToCustomerOrder({ orderData: response?.data.order }));
@@ -147,6 +151,9 @@ function CheckoutPage() {
         toast.success(response.data.message);
         navigate(`/menu/${restaurantId}/${tableNumber}`);
         setLoading(false);
+        posthog.capture("placed_order_by_cash_payment", {
+          method: "Cash",
+        });
       }
     } catch (error) {
       setLoading(false);
@@ -163,6 +170,9 @@ function CheckoutPage() {
     }
     navigate(`/menu/${restaurantId}/${tableNumber}`, {
       state: { openCart: true },
+    });
+    posthog.capture("back_to_menu_without_placed_order", {
+      method: "backToMenu",
     });
   };
 

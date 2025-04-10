@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MdDeleteOutline } from "react-icons/md";
+import posthog from "../../posthog";
 
 function Restaurants() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -93,6 +94,10 @@ function Restaurants() {
         setIsModalOpen(false);
         setLoading(false);
         toast.success(response.data.message);
+        posthog.capture("branche_added_by_Admin", {
+          manager_email: formData.manager_email,
+          branch_location: formData.location,
+        });
       } else {
         setIsModalOpen(false);
         setLoading(false);
